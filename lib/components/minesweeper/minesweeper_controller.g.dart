@@ -16,13 +16,6 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
           Computed<List<List<CellState>>>(() => super.boardState,
               name: 'MinesweeperControllerBase.boardState'))
       .value;
-  Computed<List<List<bool>>>? _$bombsComputed;
-
-  @override
-  List<List<bool>> get bombs =>
-      (_$bombsComputed ??= Computed<List<List<bool>>>(() => super.bombs,
-              name: 'MinesweeperControllerBase.bombs'))
-          .value;
 
   late final _$_boardStateAtom =
       Atom(name: 'MinesweeperControllerBase._boardState', context: context);
@@ -37,22 +30,6 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   set _boardState(List<List<CellState>> value) {
     _$_boardStateAtom.reportWrite(value, super._boardState, () {
       super._boardState = value;
-    });
-  }
-
-  late final _$_bombsAtom =
-      Atom(name: 'MinesweeperControllerBase._bombs', context: context);
-
-  @override
-  List<List<bool>> get _bombs {
-    _$_bombsAtom.reportRead();
-    return super._bombs;
-  }
-
-  @override
-  set _bombs(List<List<bool>> value) {
-    _$_bombsAtom.reportWrite(value, super._bombs, () {
-      super._bombs = value;
     });
   }
 
@@ -84,8 +61,7 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   @override
   String toString() {
     return '''
-boardState: ${boardState},
-bombs: ${bombs}
+boardState: ${boardState}
     ''';
   }
 }

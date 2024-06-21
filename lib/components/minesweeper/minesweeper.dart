@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_minesweeper/components/cell.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -59,31 +59,34 @@ class _MinesweeperState extends State<Minesweeper> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        children: List.generate(
-          widget.difficulty.y,
-          (y) {
-            return Row(
-              children: List.generate(
-                widget.difficulty.x,
-                (x) {
-                  return Observer(builder: (context) {
-                    return Cell(
-                      isBomb: ctrl.bombs[x][y],
-                      state: ctrl.boardState[x][y],
-                      onChangeState: (state) {
-                        ctrl.updateCellState(x, y, state);
-                      },
-                    );
-                  });
-                },
-              ),
-            );
-          },
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: List.generate(
+              widget.difficulty.y,
+              (y) {
+                return Row(
+                  children: List.generate(
+                    widget.difficulty.x,
+                    (x) {
+                      return Observer(builder: (context) {
+                        return Cell(
+                          state: ctrl.boardState[x][y],
+                          onChangeState: (state) {
+                            ctrl.updateCellState(x, y, state);
+                          },
+                        );
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

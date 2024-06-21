@@ -10,7 +10,18 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Flutter Demo Home Page'),
       ),
-      body: const SingleChildScrollView(child: Minesweeper()),
+      body: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Minesweeper(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
