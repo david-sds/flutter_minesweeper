@@ -3,25 +3,29 @@ import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 
 class CellState {
   CellState({
-    required this.id,
+    required this.x,
+    required this.y,
     required this.isBomb,
     required this.type,
     required this.closeCells,
   });
 
-  int id;
+  int x;
+  int y;
   bool isBomb;
   CellStateTypes type;
   CloseCells closeCells;
 
   CellState copyWith({
-    int? id,
+    int? x,
+    int? y,
     bool? isBomb,
     CellStateTypes? type,
     CloseCells? closeCells,
   }) {
     return CellState(
-      id: id ?? this.id,
+      x: x ?? this.x,
+      y: y ?? this.y,
       isBomb: isBomb ?? this.isBomb,
       type: type ?? this.type,
       closeCells: closeCells ?? this.closeCells,
@@ -30,6 +34,7 @@ class CellState {
 }
 
 class CloseCells {
+  // TODO put this in the controller
   CloseCells({
     this.top,
     this.topRight,
@@ -50,7 +55,7 @@ class CloseCells {
   CellState? left;
   CellState? topLeft;
 
-  List<CellState?> get cells => [
+  List<CellState?> get values => [
         top,
         topRight,
         right,
@@ -61,7 +66,7 @@ class CloseCells {
         topLeft,
       ];
 
-  int get bombNumber => cells.where((cell) => cell?.isBomb ?? false).length;
+  int get bombNumber => values.where((cell) => cell?.isBomb ?? false).length;
 
   Color? get bombNumberColor {
     switch (bombNumber) {

@@ -23,12 +23,15 @@ abstract class MinesweeperControllerBase with Store {
       for (var i = 0; i < difficulty.x; i++) {
         boardState.add([]);
         for (var j = 0; j < difficulty.y; j++) {
-          boardState[i].add(CellState(
-            id: i + j,
-            type: CellStateTypes.default_,
-            isBomb: false,
-            closeCells: CloseCells(),
-          ));
+          boardState[i].add(
+            CellState(
+              x: i,
+              y: j,
+              type: CellStateTypes.default_,
+              isBomb: false,
+              closeCells: CloseCells(),
+            ),
+          );
         }
       }
 
@@ -93,6 +96,43 @@ abstract class MinesweeperControllerBase with Store {
       _boardState = boardState;
     } catch (e) {
       debugPrint('error while updating cell => $e');
+    }
+  }
+
+  @action
+  void clearSurroundingCell(CellState value) {
+    try {
+      final bombNumber = value.closeCells.bombNumber;
+      final surroundingFlaggedCellsNumber = value.closeCells.values
+          .where((cell) => cell?.type == CellStateTypes.flag)
+          .length;
+      print(surroundingFlaggedCellsNumber);
+      print(value.closeCells.values.map((e) => e?.type.toString()).toList());
+      if (bombNumber == surroundingFlaggedCellsNumber) {
+        print('teste');
+
+        for (final neighborCell in value.closeCells.values) {
+          final x = neighborCell?.x;
+          final y = neighborCell?.y;
+          final updatedState = neighborCell?.copyWith(
+            type: neighborCell.isBomb
+                ? CellStateTypes.exploded
+                : CellStateTypes.empty,
+          );
+
+          if (x == null || y == null || updatedState == null) {
+            continue;
+          }
+
+          updateCellState(
+            x,
+            y,
+            updatedState,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('error while clearing surrounding cells => $e');
     }
   }
 }

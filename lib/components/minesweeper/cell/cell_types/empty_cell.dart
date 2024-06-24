@@ -17,6 +17,7 @@ class EmptyCell extends StatelessWidget {
     return CellShell(
       bombNumber: state.closeCells.bombNumber,
       bombNumberColor: state.closeCells.bombNumberColor,
+      onLeftClick: () => onChangeState(state),
       color: Colors.grey,
     );
   }

@@ -77,6 +77,9 @@ class _MinesweeperState extends State<Minesweeper> {
                           onChangeState: (state) {
                             ctrl.updateCellState(x, y, state);
                           },
+                          onClearSurroundingCells: (state) {
+                            ctrl.clearSurroundingCell(state);
+                          },
                         );
                       });
                     },

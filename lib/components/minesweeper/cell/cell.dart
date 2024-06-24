@@ -18,12 +18,14 @@ class Cell extends StatelessWidget {
   const Cell({
     required this.state,
     required this.onChangeState,
+    this.onClearSurroundingCells,
     this.cellSize = 60,
     super.key,
   });
 
   final CellState state;
   final void Function(CellState) onChangeState;
+  final void Function(CellState)? onClearSurroundingCells;
   final double cellSize;
 
   @override
@@ -37,7 +39,7 @@ class Cell extends StatelessWidget {
       case CellStateTypes.empty:
         return EmptyCell(
           state: state,
-          onChangeState: onChangeState,
+          onChangeState: (state) => onClearSurroundingCells?.call(state),
         );
       case CellStateTypes.exploded:
         return ExplodedCell(
