@@ -17,6 +17,7 @@ class FlaggedCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CellShell(
+      state: state,
       iconData: Symbols.flag,
       color: Colors.yellow,
       onRightClick: () => onChangeState(

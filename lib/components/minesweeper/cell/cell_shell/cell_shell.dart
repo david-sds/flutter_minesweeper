@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
 
 class CellShell extends StatelessWidget {
   const CellShell({
     super.key,
+    required this.state,
     this.color = Colors.transparent,
     this.size = 50,
     this.iconData,
@@ -12,6 +14,7 @@ class CellShell extends StatelessWidget {
     this.bombNumberColor,
   });
 
+  final CellState state;
   final Color? color;
   final double size;
   final IconData? iconData;
@@ -35,32 +38,51 @@ class CellShell extends StatelessWidget {
             ),
             width: size,
             height: size,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                if (iconData != null) Icon(iconData),
-                if (bombNumber != null && bombNumber != 0)
-                  Stack(
-                    children: [
-                      Text(
-                        bombNumber.toString(),
-                        style: TextStyle(
-                          fontSize: size * (2 / 5),
-                          foreground: Paint()
-                            ..style = PaintingStyle.stroke
-                            ..strokeWidth = 2
-                            ..color = Colors.black,
-                        ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (iconData != null) Icon(iconData),
+                    if (bombNumber != null && bombNumber != 0)
+                      Stack(
+                        children: [
+                          Text(
+                            bombNumber.toString(),
+                            style: TextStyle(
+                              fontSize: size * (2 / 5),
+                              foreground: Paint()
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 2
+                                ..color = Colors.black,
+                            ),
+                          ),
+                          Text(
+                            bombNumber.toString(),
+                            style: TextStyle(
+                              fontSize: size * (2 / 5),
+                              color: bombNumberColor,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        bombNumber.toString(),
-                        style: TextStyle(
-                          fontSize: size * (2 / 5),
-                          color: bombNumberColor,
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '(${state.x.toString()}, ${state.y.toString()})',
+                          style: const TextStyle(fontSize: 10),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    )
+                  ],
+                ),
               ],
             ),
           ),

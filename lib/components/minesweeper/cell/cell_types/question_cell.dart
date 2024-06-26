@@ -17,6 +17,7 @@ class QuestionCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CellShell(
+      state: state,
       iconData: Symbols.question_mark,
       color: Colors.green,
       onRightClick: () => onChangeState(

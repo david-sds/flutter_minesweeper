@@ -9,6 +9,13 @@ part of 'minesweeper_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$MinesweeperController on MinesweeperControllerBase, Store {
+  Computed<Difficulty>? _$difficultyComputed;
+
+  @override
+  Difficulty get difficulty =>
+      (_$difficultyComputed ??= Computed<Difficulty>(() => super.difficulty,
+              name: 'MinesweeperControllerBase.difficulty'))
+          .value;
   Computed<List<List<CellState>>>? _$boardStateComputed;
 
   @override
@@ -16,6 +23,22 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
           Computed<List<List<CellState>>>(() => super.boardState,
               name: 'MinesweeperControllerBase.boardState'))
       .value;
+
+  late final _$_difficultyAtom =
+      Atom(name: 'MinesweeperControllerBase._difficulty', context: context);
+
+  @override
+  Difficulty get _difficulty {
+    _$_difficultyAtom.reportRead();
+    return super._difficulty;
+  }
+
+  @override
+  set _difficulty(Difficulty value) {
+    _$_difficultyAtom.reportWrite(value, super._difficulty, () {
+      super._difficulty = value;
+    });
+  }
 
   late final _$_boardStateAtom =
       Atom(name: 'MinesweeperControllerBase._boardState', context: context);
@@ -37,22 +60,44 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
       ActionController(name: 'MinesweeperControllerBase', context: context);
 
   @override
-  void initBoard(Difficulty difficulty) {
+  void setDifficulty(Difficulty difficulty) {
     final _$actionInfo = _$MinesweeperControllerBaseActionController
-        .startAction(name: 'MinesweeperControllerBase.initBoard');
+        .startAction(name: 'MinesweeperControllerBase.setDifficulty');
     try {
-      return super.initBoard(difficulty);
+      return super.setDifficulty(difficulty);
     } finally {
       _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void updateCellState(int x, int y, CellState value) {
+  void initBoard() {
+    final _$actionInfo = _$MinesweeperControllerBaseActionController
+        .startAction(name: 'MinesweeperControllerBase.initBoard');
+    try {
+      return super.initBoard();
+    } finally {
+      _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void updateCellState(CellState value) {
     final _$actionInfo = _$MinesweeperControllerBaseActionController
         .startAction(name: 'MinesweeperControllerBase.updateCellState');
     try {
-      return super.updateCellState(x, y, value);
+      return super.updateCellState(value);
+    } finally {
+      _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearSurroundingCells(CellState value) {
+    final _$actionInfo = _$MinesweeperControllerBaseActionController
+        .startAction(name: 'MinesweeperControllerBase.clearSurroundingCells');
+    try {
+      return super.clearSurroundingCells(value);
     } finally {
       _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -61,6 +106,7 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   @override
   String toString() {
     return '''
+difficulty: ${difficulty},
 boardState: ${boardState}
     ''';
   }

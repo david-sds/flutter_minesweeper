@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cell/neighbor_cells/neighbor_cells.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper.dart';
 import 'package:mobx/mobx.dart';
 
@@ -11,12 +12,21 @@ class MinesweeperController extends MinesweeperControllerBase
 
 abstract class MinesweeperControllerBase with Store {
   @observable
+  Difficulty _difficulty = Difficulty.classic;
+  @computed
+  Difficulty get difficulty => _difficulty;
+  @action
+  void setDifficulty(Difficulty difficulty) {
+    _difficulty = difficulty;
+  }
+
+  @observable
   List<List<CellState>> _boardState = [];
   @computed
   List<List<CellState>> get boardState => _boardState;
 
   @action
-  void initBoard(Difficulty difficulty) {
+  void initBoard() {
     try {
       final boardState = <List<CellState>>[];
 
@@ -29,7 +39,6 @@ abstract class MinesweeperControllerBase with Store {
               y: j,
               type: CellStateTypes.default_,
               isBomb: false,
-              closeCells: CloseCells(),
             ),
           );
         }
@@ -46,93 +55,166 @@ abstract class MinesweeperControllerBase with Store {
         boardState[x][y].isBomb = true;
       }
 
-      for (var i = 0; i < difficulty.x; i++) {
-        for (var j = 0; j < difficulty.y; j++) {
-          final state = boardState[i][j];
-
-          final isTopmostRow = j == 0;
-          final isBottommostRow = j == difficulty.y - 1;
-          final isLeftmostColumn = i == 0;
-          final isRightmostColumn = i == difficulty.x - 1;
-
-          if (!isTopmostRow) {
-            state.closeCells.top = boardState[i][j - 1];
-          }
-          if (!isTopmostRow && !isRightmostColumn) {
-            state.closeCells.topRight = boardState[i + 1][j - 1];
-          }
-          if (!isRightmostColumn) {
-            state.closeCells.right = boardState[i + 1][j];
-          }
-          if (!isBottommostRow && !isRightmostColumn) {
-            state.closeCells.bottomRight = boardState[i + 1][j + 1];
-          }
-          if (!isBottommostRow) {
-            state.closeCells.bottom = boardState[i][j + 1];
-          }
-          if (!isBottommostRow && !isLeftmostColumn) {
-            state.closeCells.bottomLeft = boardState[i - 1][j + 1];
-          }
-          if (!isLeftmostColumn) {
-            state.closeCells.left = boardState[i - 1][j];
-          }
-          if (!isTopmostRow && !isLeftmostColumn) {
-            state.closeCells.topLeft = boardState[i - 1][j - 1];
-          }
-        }
-      }
-
       _boardState = boardState;
     } catch (e) {
-      debugPrint('error while initing board => $e');
+      debugPrint('Error while initing board => $e');
     }
   }
 
   @action
-  void updateCellState(int x, int y, CellState value) {
+  void updateCellState(CellState value) {
     try {
       final boardState = [..._boardState];
-      boardState[x][y] = value;
+      boardState[value.x][value.y] = value;
       _boardState = boardState;
     } catch (e) {
-      debugPrint('error while updating cell => $e');
+      debugPrint('Error while updating cell => $e');
     }
   }
 
   @action
-  void clearSurroundingCell(CellState value) {
+  void clearSurroundingCells(CellState value) {
     try {
-      final bombNumber = value.closeCells.bombNumber;
-      final surroundingFlaggedCellsNumber = value.closeCells.values
-          .where((cell) => cell?.type == CellStateTypes.flag)
-          .length;
-      print(surroundingFlaggedCellsNumber);
-      print(value.closeCells.values.map((e) => e?.type.toString()).toList());
-      if (bombNumber == surroundingFlaggedCellsNumber) {
-        print('teste');
+      updateCellState(value);
+      final neighborCells = getNeighborCells(value);
 
-        for (final neighborCell in value.closeCells.values) {
-          final x = neighborCell?.x;
-          final y = neighborCell?.y;
-          final updatedState = neighborCell?.copyWith(
-            type: neighborCell.isBomb
-                ? CellStateTypes.exploded
-                : CellStateTypes.empty,
-          );
-
-          if (x == null || y == null || updatedState == null) {
-            continue;
-          }
-
-          updateCellState(
-            x,
-            y,
-            updatedState,
-          );
-        }
+      if (neighborCells.bombNumber == 0) {
+        clearAllSurroundingEmptyCells(
+          value: value,
+          visitedCells: [],
+          cellsToVisit: [],
+        );
+      } else {
+        clearUnflaggedNeighborCells(neighborCells);
       }
     } catch (e) {
-      debugPrint('error while clearing surrounding cells => $e');
+      debugPrint('Error while clearing surrounding cells => $e');
     }
+  }
+
+  void clearUnflaggedNeighborCells(NeighborCells neighborCells) {
+    final bombNumber = neighborCells.bombNumber;
+    final surroundingFlaggedCellsNumber = neighborCells.values
+        .where((cell) => cell?.type == CellStateTypes.flag)
+        .length;
+    if (bombNumber == surroundingFlaggedCellsNumber) {
+      for (final neighborCell in neighborCells.values) {
+        if (neighborCell == null || neighborCell.type == CellStateTypes.flag) {
+          continue;
+        }
+        if (getNeighborCells(neighborCell).bombNumber == 0) {
+          clearAllSurroundingEmptyCells(
+            value: neighborCell,
+            visitedCells: [],
+            cellsToVisit: [],
+          );
+        }
+        final updatedState = neighborCell.copyWith(
+          type: neighborCell.isBomb
+              ? CellStateTypes.exploded
+              : CellStateTypes.empty,
+        );
+
+        updateCellState(
+          updatedState,
+        );
+      }
+    }
+  }
+
+  void clearAllSurroundingEmptyCells({
+    required CellState value,
+    required List<CellState> visitedCells,
+    required List<CellState> cellsToVisit,
+    int count = 0,
+  }) {
+    cellsToVisit.remove(value);
+    visitedCells.add(value);
+    print('count: $count');
+    count += 1;
+
+    if (value.isBomb) {
+      updateCellState(value.copyWith(type: CellStateTypes.exploded));
+      return;
+    }
+
+    updateCellState(value.copyWith(type: CellStateTypes.empty));
+    final neighborCells = getNeighborCells(value);
+
+    if (neighborCells.bombNumber > 0) {
+      updateCellState(value.copyWith(type: CellStateTypes.empty));
+      return;
+    }
+
+    cellsToVisit.addAll(
+      neighborCells.values.whereType<CellState>().where(
+        (cell) {
+          final isVisited = visitedCells.any(
+            (e) => e.x == cell.x && e.y == cell.y,
+          );
+          final isToVisit = cellsToVisit.any(
+            (e) => e.x == cell.x && e.y == cell.y,
+          );
+          return !isVisited && !isToVisit;
+        },
+      ),
+    );
+
+    print('visitedCells: $visitedCells');
+    print('cellsToVisit: $cellsToVisit');
+    print('first: ${cellsToVisit.first}');
+    print('-------------------------------------');
+
+    for (final cell in cellsToVisit) {
+      clearAllSurroundingEmptyCells(
+        value: cell,
+        visitedCells: visitedCells,
+        cellsToVisit: cellsToVisit,
+        count: count,
+      );
+    }
+  }
+
+  NeighborCells getNeighborCells(CellState value) {
+    try {
+      final isTopmostRow = value.y == 0;
+      final isBottommostRow = value.y == difficulty.y - 1;
+      final isLeftmostColumn = value.x == 0;
+      final isRightmostColumn = value.x == difficulty.x - 1;
+
+      final neighborCells = NeighborCells();
+
+      if (!isTopmostRow) {
+        neighborCells.top = boardState[value.x][value.y - 1];
+      }
+      if (!isTopmostRow && !isRightmostColumn) {
+        neighborCells.topRight = boardState[value.x + 1][value.y - 1];
+      }
+      if (!isRightmostColumn) {
+        neighborCells.right = boardState[value.x + 1][value.y];
+      }
+      if (!isBottommostRow && !isRightmostColumn) {
+        neighborCells.bottomRight = boardState[value.x + 1][value.y + 1];
+      }
+      if (!isBottommostRow) {
+        neighborCells.bottom = boardState[value.x][value.y + 1];
+      }
+      if (!isBottommostRow && !isLeftmostColumn) {
+        neighborCells.bottomLeft = boardState[value.x - 1][value.y + 1];
+      }
+      if (!isLeftmostColumn) {
+        neighborCells.left = boardState[value.x - 1][value.y];
+      }
+      if (!isTopmostRow && !isLeftmostColumn) {
+        neighborCells.topLeft = boardState[value.x - 1][value.y - 1];
+      }
+
+      return neighborCells;
+    } catch (e) {
+      debugPrint(
+        'Error while getting NeighborCells (${value.x}, ${value.y})=> $e',
+      );
+    }
+    return NeighborCells();
   }
 }

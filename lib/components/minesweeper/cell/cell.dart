@@ -5,6 +5,7 @@ import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/empty
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/exploded_cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/flagged_cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/question_cell.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cell/neighbor_cells/neighbor_cells.dart';
 
 enum CellStateTypes {
   default_,
@@ -17,15 +18,17 @@ enum CellStateTypes {
 class Cell extends StatelessWidget {
   const Cell({
     required this.state,
+    required this.neighborCells,
     required this.onChangeState,
-    this.onClearSurroundingCells,
+    required this.onClearSurroundingCells,
     this.cellSize = 60,
     super.key,
   });
 
   final CellState state;
+  final NeighborCells neighborCells;
   final void Function(CellState) onChangeState;
-  final void Function(CellState)? onClearSurroundingCells;
+  final void Function(CellState) onClearSurroundingCells;
   final double cellSize;
 
   @override
@@ -34,12 +37,15 @@ class Cell extends StatelessWidget {
       case CellStateTypes.default_:
         return DefaultCell(
           state: state,
+          neighborCells: neighborCells,
           onChangeState: onChangeState,
+          onClearSurroundingCells: onClearSurroundingCells,
         );
       case CellStateTypes.empty:
         return EmptyCell(
           state: state,
-          onChangeState: (state) => onClearSurroundingCells?.call(state),
+          neighborCells: neighborCells,
+          onClearSurroundingCells: onClearSurroundingCells,
         );
       case CellStateTypes.exploded:
         return ExplodedCell(

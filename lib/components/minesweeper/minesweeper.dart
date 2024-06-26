@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 enum Difficulty {
   classic(
@@ -36,6 +37,8 @@ enum Difficulty {
   final int bombNumber;
 }
 
+// TODO se tiver 3 blocos vazios paralelos limpa na hora que acha um vazio
+
 class Minesweeper extends StatefulWidget {
   const Minesweeper({
     this.difficulty = Difficulty.classic,
@@ -53,32 +56,42 @@ class _MinesweeperState extends State<Minesweeper> {
 
   @override
   void initState() {
-    ctrl.initBoard(widget.difficulty);
+    ctrl.setDifficulty(widget.difficulty);
+    ctrl.initBoard();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Padding(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: () {
+            ctrl.initBoard();
+          },
+          icon: const Icon(Symbols.face),
+        ),
+        Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             children: List.generate(
-              widget.difficulty.y,
+              ctrl.boardState.length,
               (y) {
                 return Row(
                   children: List.generate(
-                    widget.difficulty.x,
+                    ctrl.boardState[y].length,
                     (x) {
                       return Observer(builder: (context) {
+                        final cellState = ctrl.boardState[x][y];
                         return Cell(
-                          state: ctrl.boardState[x][y],
+                          state: cellState,
+                          neighborCells: ctrl.getNeighborCells(cellState),
                           onChangeState: (state) {
-                            ctrl.updateCellState(x, y, state);
+                            ctrl.updateCellState(state);
                           },
                           onClearSurroundingCells: (state) {
-                            ctrl.clearSurroundingCell(state);
+                            ctrl.clearSurroundingCells(state);
                           },
                         );
                       });
@@ -88,8 +101,8 @@ class _MinesweeperState extends State<Minesweeper> {
               },
             ),
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

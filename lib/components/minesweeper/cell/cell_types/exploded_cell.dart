@@ -15,7 +15,8 @@ class ExplodedCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CellShell(
+    return CellShell(
+      state: state,
       iconData: Symbols.bomb,
       color: Colors.red,
     );
