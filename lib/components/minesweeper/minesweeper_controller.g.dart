@@ -93,6 +93,17 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   }
 
   @override
+  void updateCellStates(List<CellState> values) {
+    final _$actionInfo = _$MinesweeperControllerBaseActionController
+        .startAction(name: 'MinesweeperControllerBase.updateCellStates');
+    try {
+      return super.updateCellStates(values);
+    } finally {
+      _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void clearSurroundingCells(CellState value) {
     final _$actionInfo = _$MinesweeperControllerBaseActionController
         .startAction(name: 'MinesweeperControllerBase.clearSurroundingCells');

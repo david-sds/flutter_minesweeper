@@ -72,19 +72,28 @@ abstract class MinesweeperControllerBase with Store {
   }
 
   @action
+  void updateCellStates(List<CellState> values) {
+    try {
+      final boardState = [..._boardState];
+      for (final value in values) {
+        boardState[value.x][value.y] = value.copyWith(
+          type: CellStateTypes.empty,
+        );
+      }
+      _boardState = boardState;
+    } catch (e) {
+      debugPrint('Error while updating cells => $e');
+    }
+  }
+
+  @action
   void clearSurroundingCells(CellState value) {
     try {
       updateCellState(value);
       final neighborCells = getNeighborCells(value);
 
       if (neighborCells.bombNumber == 0) {
-        final visitedCells = <CellState>[];
-        final cellsToVisit = <CellState>[];
-        clearAllSurroundingEmptyCells(
-          value: value,
-          visitedCells: visitedCells,
-          cellsToVisit: cellsToVisit,
-        );
+        clearAllSurroundingEmptyCells(value: value);
       } else {
         clearUnflaggedNeighborCells(neighborCells);
       }
@@ -104,13 +113,7 @@ abstract class MinesweeperControllerBase with Store {
           continue;
         }
         if (getNeighborCells(neighborCell).bombNumber == 0) {
-          final visitedCells = <CellState>[];
-          final cellsToVisit = <CellState>[];
-          clearAllSurroundingEmptyCells(
-            value: neighborCell,
-            visitedCells: visitedCells,
-            cellsToVisit: cellsToVisit,
-          );
+          clearAllSurroundingEmptyCells(value: neighborCell);
         }
         final updatedState = neighborCell.copyWith(
           type: neighborCell.isBomb
@@ -127,6 +130,17 @@ abstract class MinesweeperControllerBase with Store {
 
   void clearAllSurroundingEmptyCells({
     required CellState value,
+  }) {
+    final cellsToUpdate = getClearAllSurroundingEmptyCells(
+      value: value,
+      visitedCells: [],
+      cellsToVisit: [],
+    );
+    updateCellStates(cellsToUpdate ?? []);
+  }
+
+  List<CellState>? getClearAllSurroundingEmptyCells({
+    required CellState value,
     required List<CellState> visitedCells,
     required List<CellState> cellsToVisit,
   }) {
@@ -137,7 +151,7 @@ abstract class MinesweeperControllerBase with Store {
     final neighborCells = getNeighborCells(value);
 
     if (neighborCells.bombNumber > 0) {
-      return;
+      return null;
     }
 
     cellsToVisit.addAll(
@@ -156,12 +170,14 @@ abstract class MinesweeperControllerBase with Store {
 
     while (cellsToVisit.isNotEmpty) {
       final cell = cellsToVisit.first;
-      clearAllSurroundingEmptyCells(
+      getClearAllSurroundingEmptyCells(
         value: cell,
         visitedCells: visitedCells,
         cellsToVisit: cellsToVisit,
       );
     }
+
+    return visitedCells;
   }
 
   NeighborCells getNeighborCells(CellState value) {
