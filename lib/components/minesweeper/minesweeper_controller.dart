@@ -79,11 +79,15 @@ abstract class MinesweeperControllerBase with Store {
       final neighborCells = getNeighborCells(value);
 
       if (neighborCells.bombNumber == 0) {
+        final visitedCells = <CellState>[];
+        final cellsToVisit = <CellState>[];
         clearAllSurroundingEmptyCells(
           value: value,
-          visitedCells: [],
-          cellsToVisit: [],
+          visitedCells: visitedCells,
+          cellsToVisit: cellsToVisit,
         );
+        print('visitedCells $visitedCells');
+        print('cellsToVisit $cellsToVisit');
       } else {
         clearUnflaggedNeighborCells(neighborCells);
       }
@@ -103,10 +107,12 @@ abstract class MinesweeperControllerBase with Store {
           continue;
         }
         if (getNeighborCells(neighborCell).bombNumber == 0) {
+          final visitedCells = <CellState>[];
+          final cellsToVisit = <CellState>[];
           clearAllSurroundingEmptyCells(
             value: neighborCell,
-            visitedCells: [],
-            cellsToVisit: [],
+            visitedCells: visitedCells,
+            cellsToVisit: cellsToVisit,
           );
         }
         final updatedState = neighborCell.copyWith(
@@ -126,12 +132,9 @@ abstract class MinesweeperControllerBase with Store {
     required CellState value,
     required List<CellState> visitedCells,
     required List<CellState> cellsToVisit,
-    int count = 0,
   }) {
     cellsToVisit.remove(value);
     visitedCells.add(value);
-    print('count: $count');
-    count += 1;
 
     if (value.isBomb) {
       updateCellState(value.copyWith(type: CellStateTypes.exploded));
@@ -142,7 +145,6 @@ abstract class MinesweeperControllerBase with Store {
     final neighborCells = getNeighborCells(value);
 
     if (neighborCells.bombNumber > 0) {
-      updateCellState(value.copyWith(type: CellStateTypes.empty));
       return;
     }
 
@@ -160,17 +162,12 @@ abstract class MinesweeperControllerBase with Store {
       ),
     );
 
-    print('visitedCells: $visitedCells');
-    print('cellsToVisit: $cellsToVisit');
-    print('first: ${cellsToVisit.first}');
-    print('-------------------------------------');
-
-    for (final cell in cellsToVisit) {
+    while (cellsToVisit.isNotEmpty) {
+      final cell = cellsToVisit.first;
       clearAllSurroundingEmptyCells(
         value: cell,
         visitedCells: visitedCells,
         cellsToVisit: cellsToVisit,
-        count: count,
       );
     }
   }
