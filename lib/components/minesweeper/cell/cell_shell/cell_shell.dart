@@ -12,6 +12,7 @@ class CellShell extends StatelessWidget {
     this.onRightClick,
     this.bombNumber,
     this.bombNumberColor,
+    this.showBombCoords = false,
   });
 
   final CellState state;
@@ -22,6 +23,7 @@ class CellShell extends StatelessWidget {
   final void Function()? onRightClick;
   final int? bombNumber;
   final Color? bombNumberColor;
+  final bool showBombCoords;
 
   @override
   Widget build(BuildContext context) {
@@ -69,20 +71,21 @@ class CellShell extends StatelessWidget {
                       ),
                   ],
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '(${state.x.toString()}, ${state.y.toString()})',
-                          style: const TextStyle(fontSize: 10),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
+                if (showBombCoords)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '(${state.x.toString()}, ${state.y.toString()})',
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
               ],
             ),
           ),

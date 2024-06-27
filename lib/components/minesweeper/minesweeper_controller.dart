@@ -45,8 +45,7 @@ abstract class MinesweeperControllerBase with Store {
       }
 
       final bombPositions =
-          List<int>.generate(difficulty.x * difficulty.y, (i) => i + 1)
-            ..shuffle();
+          List<int>.generate(difficulty.x * difficulty.y, (i) => i)..shuffle();
       for (var i = 0; i < difficulty.bombNumber; i++) {
         final bombPos = bombPositions.removeLast();
         final y = (bombPos / difficulty.x).floor();
@@ -86,8 +85,6 @@ abstract class MinesweeperControllerBase with Store {
           visitedCells: visitedCells,
           cellsToVisit: cellsToVisit,
         );
-        print('visitedCells $visitedCells');
-        print('cellsToVisit $cellsToVisit');
       } else {
         clearUnflaggedNeighborCells(neighborCells);
       }
@@ -135,11 +132,6 @@ abstract class MinesweeperControllerBase with Store {
   }) {
     cellsToVisit.remove(value);
     visitedCells.add(value);
-
-    if (value.isBomb) {
-      updateCellState(value.copyWith(type: CellStateTypes.exploded));
-      return;
-    }
 
     updateCellState(value.copyWith(type: CellStateTypes.empty));
     final neighborCells = getNeighborCells(value);
