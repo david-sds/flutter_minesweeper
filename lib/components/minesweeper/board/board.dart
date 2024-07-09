@@ -40,8 +40,6 @@ class Board extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final width = constraints.maxWidth;
-      final height = constraints.maxHeight;
       return Container(
         color: Colors.grey[600],
         child: Column(
