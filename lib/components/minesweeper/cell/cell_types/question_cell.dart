@@ -8,9 +8,11 @@ class QuestionCell extends StatelessWidget {
   const QuestionCell({
     required this.state,
     required this.onChangeState,
+    required this.cellSize,
     super.key,
   });
 
+  final double cellSize;
   final CellState state;
   final void Function(CellState) onChangeState;
 
@@ -18,6 +20,7 @@ class QuestionCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return CellShell(
       state: state,
+      size: cellSize,
       iconData: Symbols.question_mark,
       color: Colors.green,
       onRightClick: () => onChangeState(

@@ -82,22 +82,22 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   }
 
   @override
-  void updateCellState(CellState value) {
+  void updateCellStates(List<CellState> values) {
     final _$actionInfo = _$MinesweeperControllerBaseActionController
-        .startAction(name: 'MinesweeperControllerBase.updateCellState');
+        .startAction(name: 'MinesweeperControllerBase.updateCellStates');
     try {
-      return super.updateCellState(value);
+      return super.updateCellStates(values);
     } finally {
       _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void updateCellStates(List<CellState> values) {
+  void updateCellState(CellState value) {
     final _$actionInfo = _$MinesweeperControllerBaseActionController
-        .startAction(name: 'MinesweeperControllerBase.updateCellStates');
+        .startAction(name: 'MinesweeperControllerBase.updateCellState');
     try {
-      return super.updateCellStates(values);
+      return super.updateCellState(value);
     } finally {
       _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
     }

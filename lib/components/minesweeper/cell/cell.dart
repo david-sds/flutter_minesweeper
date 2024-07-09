@@ -21,7 +21,7 @@ class Cell extends StatelessWidget {
     required this.neighborCells,
     required this.onChangeState,
     required this.onClearSurroundingCells,
-    this.cellSize = 60,
+    this.cellSize = 30,
     super.key,
   });
 
@@ -40,27 +40,32 @@ class Cell extends StatelessWidget {
           neighborCells: neighborCells,
           onChangeState: onChangeState,
           onClearSurroundingCells: onClearSurroundingCells,
+          cellSize: cellSize,
         );
       case CellStateTypes.empty:
         return EmptyCell(
           state: state,
           neighborCells: neighborCells,
           onClearSurroundingCells: onClearSurroundingCells,
+          cellSize: cellSize,
         );
       case CellStateTypes.exploded:
         return ExplodedCell(
           state: state,
           onChangeState: onChangeState,
+          cellSize: cellSize,
         );
       case CellStateTypes.flag:
         return FlaggedCell(
           state: state,
           onChangeState: onChangeState,
+          cellSize: cellSize,
         );
       case CellStateTypes.question:
         return QuestionCell(
           state: state,
           onChangeState: onChangeState,
+          cellSize: cellSize,
         );
       default:
         return const SizedBox();

@@ -8,9 +8,11 @@ class FlaggedCell extends StatelessWidget {
   const FlaggedCell({
     required this.state,
     required this.onChangeState,
+    required this.cellSize,
     super.key,
   });
 
+  final double cellSize;
   final CellState state;
   final void Function(CellState) onChangeState;
 
@@ -18,6 +20,7 @@ class FlaggedCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return CellShell(
       state: state,
+      size: cellSize,
       iconData: Symbols.flag,
       color: Colors.yellow,
       onRightClick: () => onChangeState(

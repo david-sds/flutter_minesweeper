@@ -7,9 +7,11 @@ class ExplodedCell extends StatelessWidget {
   const ExplodedCell({
     required this.state,
     required this.onChangeState,
+    required this.cellSize,
     super.key,
   });
 
+  final double cellSize;
   final CellState state;
   final void Function(CellState) onChangeState;
 
@@ -17,6 +19,7 @@ class ExplodedCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return CellShell(
       state: state,
+      size: cellSize,
       iconData: Symbols.bomb,
       color: Colors.red,
     );

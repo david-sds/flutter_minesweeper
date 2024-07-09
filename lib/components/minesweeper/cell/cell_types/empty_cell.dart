@@ -8,9 +8,11 @@ class EmptyCell extends StatelessWidget {
     required this.state,
     required this.neighborCells,
     required this.onClearSurroundingCells,
+    required this.cellSize,
     super.key,
   });
 
+  final double cellSize;
   final CellState state;
   final NeighborCells neighborCells;
   final void Function(CellState) onClearSurroundingCells;
@@ -19,6 +21,7 @@ class EmptyCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return CellShell(
       state: state,
+      size: cellSize,
       bombNumber: neighborCells.bombNumber,
       bombNumberColor: neighborCells.bombNumberColor,
       onLeftClick: () => onClearSurroundingCells(state),

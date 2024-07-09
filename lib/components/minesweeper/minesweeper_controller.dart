@@ -61,30 +61,20 @@ abstract class MinesweeperControllerBase with Store {
   }
 
   @action
-  void updateCellState(CellState value) {
-    try {
-      final boardState = [..._boardState];
-      boardState[value.x][value.y] = value;
-      _boardState = boardState;
-    } catch (e) {
-      debugPrint('Error while updating cell => $e');
-    }
-  }
-
-  @action
   void updateCellStates(List<CellState> values) {
     try {
       final boardState = [..._boardState];
       for (final value in values) {
-        boardState[value.x][value.y] = value.copyWith(
-          type: CellStateTypes.empty,
-        );
+        boardState[value.x][value.y] = value.copyWith();
       }
       _boardState = boardState;
     } catch (e) {
       debugPrint('Error while updating cells => $e');
     }
   }
+
+  @action
+  void updateCellState(CellState value) => updateCellStates([value]);
 
   @action
   void clearSurroundingCells(CellState value) {
@@ -136,7 +126,13 @@ abstract class MinesweeperControllerBase with Store {
       visitedCells: [],
       cellsToVisit: [],
     );
-    updateCellStates(cellsToUpdate ?? []);
+    updateCellStates(
+      (cellsToUpdate ?? [])
+          .map((e) => e.copyWith(
+                type: CellStateTypes.empty,
+              ))
+          .toList(),
+    );
   }
 
   List<CellState>? getClearAllSurroundingEmptyCells({

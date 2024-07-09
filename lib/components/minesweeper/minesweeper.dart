@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
+import 'package:flutter_minesweeper/components/minesweeper/board/board.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -37,8 +37,6 @@ enum Difficulty {
   final int bombNumber;
 }
 
-// TODO se tiver 3 blocos vazios paralelos limpa na hora que acha um vazio
-
 class Minesweeper extends StatefulWidget {
   const Minesweeper({
     this.difficulty = Difficulty.classic,
@@ -64,7 +62,6 @@ class _MinesweeperState extends State<Minesweeper> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
           onPressed: () {
@@ -72,36 +69,21 @@ class _MinesweeperState extends State<Minesweeper> {
           },
           icon: const Icon(Symbols.face),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: List.generate(
-              ctrl.boardState.length,
-              (y) {
-                return Row(
-                  children: List.generate(
-                    ctrl.boardState[y].length,
-                    (x) {
-                      return Observer(builder: (context) {
-                        final cellState = ctrl.boardState[x][y];
-                        return Cell(
-                          state: cellState,
-                          neighborCells: ctrl.getNeighborCells(cellState),
-                          onChangeState: (state) {
-                            ctrl.updateCellState(state);
-                          },
-                          onClearSurroundingCells: (state) {
-                            ctrl.clearSurroundingCells(state);
-                          },
-                        );
-                      });
-                    },
-                  ),
-                );
+        Observer(builder: (context) {
+          return Expanded(
+            child: Board(
+              difficulty: widget.difficulty,
+              boardState: ctrl.boardState,
+              onGetNeighborCells: ctrl.getNeighborCells,
+              onChangeState: (state) {
+                ctrl.updateCellState(state);
+              },
+              onClearSurroundingCells: (state) {
+                ctrl.clearSurroundingCells(state);
               },
             ),
-          ),
-        ),
+          );
+        })
       ],
     );
   }

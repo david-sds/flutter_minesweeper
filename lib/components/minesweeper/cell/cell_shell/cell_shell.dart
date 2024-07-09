@@ -3,16 +3,16 @@ import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_
 
 class CellShell extends StatelessWidget {
   const CellShell({
-    super.key,
     required this.state,
+    required this.size,
     this.color = Colors.transparent,
-    this.size = 50,
     this.iconData,
     this.onLeftClick,
     this.onRightClick,
     this.bombNumber,
     this.bombNumberColor,
     this.showBombCoords = false,
+    super.key,
   });
 
   final CellState state;
@@ -38,8 +38,8 @@ class CellShell extends StatelessWidget {
               border: Border.all(width: 1),
               color: color,
             ),
-            width: size,
-            height: size,
+            width: size - 2,
+            height: size - 2,
             child: Stack(
               alignment: Alignment.center,
               children: [

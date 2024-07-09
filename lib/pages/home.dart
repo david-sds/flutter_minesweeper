@@ -10,17 +10,8 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Flutter Minesweeper'),
       ),
-      body: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Minesweeper(),
-            ],
-          ),
-        ],
+      body: const Minesweeper(
+        difficulty: Difficulty.medium,
       ),
     );
   }

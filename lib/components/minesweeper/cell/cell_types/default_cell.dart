@@ -10,9 +10,11 @@ class DefaultCell extends StatelessWidget {
     required this.neighborCells,
     required this.onChangeState,
     required this.onClearSurroundingCells,
+    required this.cellSize,
     super.key,
   });
 
+  final double cellSize;
   final CellState state;
   final NeighborCells neighborCells;
   final void Function(CellState) onChangeState;
@@ -22,6 +24,7 @@ class DefaultCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return CellShell(
       state: state,
+      size: cellSize,
       color: Colors.blue,
       onLeftClick: () {
         if (state.isBomb) {
