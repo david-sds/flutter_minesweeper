@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/board/board.dart';
+import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 enum Difficulty {
   classic(
@@ -63,11 +63,11 @@ class _MinesweeperState extends State<Minesweeper> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        IconButton(
-          onPressed: () {
+        Face(
+          state: FaceState.playing,
+          onTap: () {
             ctrl.initBoard();
           },
-          icon: const Icon(Symbols.face),
         ),
         Observer(builder: (context) {
           return Expanded(

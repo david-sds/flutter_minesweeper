@@ -26,5 +26,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  # assets:
-  #   - assets/
+  assets:
+    - assets/images/faces/playing.png
+    - assets/images/faces/victory.png
+    - assets/images/faces/game_over.png
