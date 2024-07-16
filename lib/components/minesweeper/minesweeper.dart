@@ -63,12 +63,14 @@ class _MinesweeperState extends State<Minesweeper> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Face(
-          state: FaceState.playing,
-          onTap: () {
-            ctrl.initBoard();
-          },
-        ),
+        Observer(builder: (context) {
+          return Face(
+            state: ctrl.gameState,
+            onTap: () {
+              ctrl.initBoard();
+            },
+          );
+        }),
         Observer(builder: (context) {
           return Expanded(
             child: Board(

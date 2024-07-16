@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/neighbor_cells/neighbor_cells.dart';
+import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper.dart';
 import 'package:mobx/mobx.dart';
 
@@ -18,6 +19,15 @@ abstract class MinesweeperControllerBase with Store {
   @action
   void setDifficulty(Difficulty difficulty) {
     _difficulty = difficulty;
+  }
+
+  @observable
+  GameState _gameState = GameState.playing;
+  @computed
+  GameState get gameState => _gameState;
+  @action
+  void setGameState(GameState value) {
+    _gameState = value;
   }
 
   @observable

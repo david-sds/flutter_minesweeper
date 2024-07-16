@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-enum FaceState {
-  playing(path: 'assets/images/faces/playing.png'),
-  victory(path: 'assets/images/faces/victory.png'),
-  gameOver(path: 'assets/images/faces/game_over.png');
+enum GameState {
+  playing(faceImagePath: 'assets/images/faces/playing.png'),
+  victory(faceImagePath: 'assets/images/faces/victory.png'),
+  gameOver(faceImagePath: 'assets/images/faces/game_over.png');
 
-  const FaceState({required this.path});
+  const GameState({required this.faceImagePath});
 
-  final String path;
+  final String faceImagePath;
 }
 
 class Face extends StatelessWidget {
@@ -19,7 +19,7 @@ class Face extends StatelessWidget {
     super.key,
   });
 
-  final FaceState state;
+  final GameState state;
   final double size;
   final EdgeInsetsGeometry padding;
   final void Function()? onTap;
@@ -34,7 +34,7 @@ class Face extends StatelessWidget {
         child: SizedBox(
           height: size,
           width: size,
-          child: Image.asset(state.path),
+          child: Image.asset(state.faceImagePath),
         ),
       ),
     );
