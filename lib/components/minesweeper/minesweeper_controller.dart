@@ -22,15 +22,6 @@ abstract class MinesweeperControllerBase with Store {
   }
 
   @observable
-  GameState _gameState = GameState.playing;
-  @computed
-  GameState get gameState => _gameState;
-  @action
-  void setGameState(GameState value) {
-    _gameState = value;
-  }
-
-  @observable
   List<List<CellState>> _boardState = [];
   @computed
   List<List<CellState>> get boardState => _boardState;
@@ -70,12 +61,35 @@ abstract class MinesweeperControllerBase with Store {
     }
   }
 
+  @computed
+  GameState get gameState {
+    final boardState = [..._boardState];
+    var isEveryEmptyCellCleared = true;
+
+    for (final boardRowState in boardState) {
+      for (final cellState in boardRowState) {
+        if (cellState.type == CellStateTypes.exploded) {
+          return GameState.gameOver;
+        }
+        if (!cellState.isBomb && cellState.type != CellStateTypes.cleared) {
+          isEveryEmptyCellCleared = false;
+        }
+      }
+    }
+
+    if (isEveryEmptyCellCleared) {
+      return GameState.victory;
+    }
+
+    return GameState.playing;
+  }
+
   @action
   void updateCellStates(List<CellState> values) {
     try {
       final boardState = [..._boardState];
       for (final value in values) {
-        boardState[value.x][value.y] = value.copyWith();
+        boardState[value.x][value.y] = value;
       }
       _boardState = boardState;
     } catch (e) {
@@ -118,7 +132,7 @@ abstract class MinesweeperControllerBase with Store {
         final updatedState = neighborCell.copyWith(
           type: neighborCell.isBomb
               ? CellStateTypes.exploded
-              : CellStateTypes.empty,
+              : CellStateTypes.cleared,
         );
 
         updateCellState(
@@ -138,9 +152,7 @@ abstract class MinesweeperControllerBase with Store {
     );
     updateCellStates(
       (cellsToUpdate ?? [])
-          .map((e) => e.copyWith(
-                type: CellStateTypes.empty,
-              ))
+          .map((e) => e.copyWith(type: CellStateTypes.cleared))
           .toList(),
     );
   }
@@ -153,7 +165,7 @@ abstract class MinesweeperControllerBase with Store {
     cellsToVisit.remove(value);
     visitedCells.add(value);
 
-    updateCellState(value.copyWith(type: CellStateTypes.empty));
+    updateCellState(value.copyWith(type: CellStateTypes.cleared));
     final neighborCells = getNeighborCells(value);
 
     if (neighborCells.bombNumber > 0) {

@@ -37,13 +37,13 @@ class DefaultCell extends StatelessWidget {
           if (neighborCells.bombNumber == 0) {
             onClearSurroundingCells(
               state.copyWith(
-                type: CellStateTypes.empty,
+                type: CellStateTypes.cleared,
               ),
             );
           } else {
             onChangeState(
               state.copyWith(
-                type: CellStateTypes.empty,
+                type: CellStateTypes.cleared,
               ),
             );
           }

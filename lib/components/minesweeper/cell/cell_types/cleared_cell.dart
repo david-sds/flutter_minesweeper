@@ -3,8 +3,8 @@ import 'package:flutter_minesweeper/components/minesweeper/cell/cell_shell/cell_
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/neighbor_cells/neighbor_cells.dart';
 
-class EmptyCell extends StatelessWidget {
-  const EmptyCell({
+class ClearedCell extends StatelessWidget {
+  const ClearedCell({
     required this.state,
     required this.neighborCells,
     required this.onClearSurroundingCells,

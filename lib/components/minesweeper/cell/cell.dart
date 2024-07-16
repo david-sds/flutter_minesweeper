@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/cleared_cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/default_cell.dart';
-import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/empty_cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/exploded_cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/flagged_cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_types/question_cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/neighbor_cells/neighbor_cells.dart';
+import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 
 enum CellStateTypes {
   default_,
-  empty,
+  cleared,
   flag,
   question,
   exploded;
@@ -18,6 +19,7 @@ enum CellStateTypes {
 class Cell extends StatelessWidget {
   const Cell({
     required this.state,
+    required this.gameState,
     required this.neighborCells,
     required this.onChangeState,
     required this.onClearSurroundingCells,
@@ -26,6 +28,7 @@ class Cell extends StatelessWidget {
   });
 
   final CellState state;
+  final GameState gameState;
   final NeighborCells neighborCells;
   final void Function(CellState) onChangeState;
   final void Function(CellState) onClearSurroundingCells;
@@ -33,6 +36,23 @@ class Cell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (gameState == GameState.gameOver) {
+      if (state.isBomb) {
+        return ExplodedCell(
+          state: state,
+          onChangeState: onChangeState,
+          cellSize: cellSize,
+        );
+      } else {
+        return ClearedCell(
+          state: state,
+          neighborCells: neighborCells,
+          onClearSurroundingCells: onClearSurroundingCells,
+          cellSize: cellSize,
+        );
+      }
+    }
+
     switch (state.type) {
       case CellStateTypes.default_:
         return DefaultCell(
@@ -42,8 +62,8 @@ class Cell extends StatelessWidget {
           onClearSurroundingCells: onClearSurroundingCells,
           cellSize: cellSize,
         );
-      case CellStateTypes.empty:
-        return EmptyCell(
+      case CellStateTypes.cleared:
+        return ClearedCell(
           state: state,
           neighborCells: neighborCells,
           onClearSurroundingCells: onClearSurroundingCells,

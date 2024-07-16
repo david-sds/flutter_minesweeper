@@ -16,13 +16,6 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
       (_$difficultyComputed ??= Computed<Difficulty>(() => super.difficulty,
               name: 'MinesweeperControllerBase.difficulty'))
           .value;
-  Computed<GameState>? _$gameStateComputed;
-
-  @override
-  GameState get gameState =>
-      (_$gameStateComputed ??= Computed<GameState>(() => super.gameState,
-              name: 'MinesweeperControllerBase.gameState'))
-          .value;
   Computed<List<List<CellState>>>? _$boardStateComputed;
 
   @override
@@ -30,6 +23,13 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
           Computed<List<List<CellState>>>(() => super.boardState,
               name: 'MinesweeperControllerBase.boardState'))
       .value;
+  Computed<GameState>? _$gameStateComputed;
+
+  @override
+  GameState get gameState =>
+      (_$gameStateComputed ??= Computed<GameState>(() => super.gameState,
+              name: 'MinesweeperControllerBase.gameState'))
+          .value;
 
   late final _$_difficultyAtom =
       Atom(name: 'MinesweeperControllerBase._difficulty', context: context);
@@ -44,22 +44,6 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   set _difficulty(Difficulty value) {
     _$_difficultyAtom.reportWrite(value, super._difficulty, () {
       super._difficulty = value;
-    });
-  }
-
-  late final _$_gameStateAtom =
-      Atom(name: 'MinesweeperControllerBase._gameState', context: context);
-
-  @override
-  GameState get _gameState {
-    _$_gameStateAtom.reportRead();
-    return super._gameState;
-  }
-
-  @override
-  set _gameState(GameState value) {
-    _$_gameStateAtom.reportWrite(value, super._gameState, () {
-      super._gameState = value;
     });
   }
 
@@ -88,17 +72,6 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
         .startAction(name: 'MinesweeperControllerBase.setDifficulty');
     try {
       return super.setDifficulty(difficulty);
-    } finally {
-      _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setGameState(GameState value) {
-    final _$actionInfo = _$MinesweeperControllerBaseActionController
-        .startAction(name: 'MinesweeperControllerBase.setGameState');
-    try {
-      return super.setGameState(value);
     } finally {
       _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -152,8 +125,8 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   String toString() {
     return '''
 difficulty: ${difficulty},
-gameState: ${gameState},
-boardState: ${boardState}
+boardState: ${boardState},
+gameState: ${gameState}
     ''';
   }
 }

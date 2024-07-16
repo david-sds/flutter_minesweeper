@@ -11,7 +11,7 @@ class Home extends StatelessWidget {
         title: const Text('Flutter Minesweeper'),
       ),
       body: const Minesweeper(
-        difficulty: Difficulty.easy,
+        difficulty: Difficulty.medium,
       ),
     );
   }

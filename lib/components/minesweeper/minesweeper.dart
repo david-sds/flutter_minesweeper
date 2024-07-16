@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_minesweeper/components/minesweeper/board/board.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -39,7 +39,7 @@ enum Difficulty {
 
 class Minesweeper extends StatefulWidget {
   const Minesweeper({
-    this.difficulty = Difficulty.classic,
+    required this.difficulty,
     super.key,
   });
 
@@ -53,15 +53,33 @@ class _MinesweeperState extends State<Minesweeper> {
   final ctrl = MinesweeperController();
 
   @override
-  void initState() {
+  initState() {
     ctrl.setDifficulty(widget.difficulty);
     ctrl.initBoard();
     super.initState();
   }
 
+  double getCellSize(BoxConstraints constraints) {
+    var maxCellSizeWidth = 30.0;
+    var maxCellSizeHeight = 30.0;
+
+    if (widget.difficulty.x * maxCellSizeWidth > constraints.maxWidth) {
+      maxCellSizeWidth = constraints.maxWidth / widget.difficulty.x;
+    }
+
+    if (widget.difficulty.y * maxCellSizeHeight > constraints.maxHeight) {
+      maxCellSizeHeight = constraints.maxHeight / widget.difficulty.y;
+    }
+
+    return maxCellSizeWidth < maxCellSizeHeight
+        ? maxCellSizeWidth
+        : maxCellSizeHeight;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
         Observer(builder: (context) {
           return Face(
@@ -71,21 +89,45 @@ class _MinesweeperState extends State<Minesweeper> {
             },
           );
         }),
-        Observer(builder: (context) {
-          return Expanded(
-            child: Board(
-              difficulty: widget.difficulty,
-              boardState: ctrl.boardState,
-              onGetNeighborCells: ctrl.getNeighborCells,
-              onChangeState: (state) {
-                ctrl.updateCellState(state);
-              },
-              onClearSurroundingCells: (state) {
-                ctrl.clearSurroundingCells(state);
-              },
-            ),
-          );
-        })
+        Expanded(
+          child: LayoutBuilder(builder: (context, constraints) {
+            return Container(
+              color: Colors.grey[600],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  ctrl.boardState.length,
+                  (y) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        ctrl.boardState[y].length,
+                        (x) {
+                          return Observer(builder: (context) {
+                            return Cell(
+                              cellSize: getCellSize(constraints),
+                              state: ctrl.boardState[x][y],
+                              gameState: ctrl.gameState,
+                              neighborCells: ctrl.getNeighborCells(
+                                ctrl.boardState[x][y],
+                              ),
+                              onChangeState: (state) {
+                                ctrl.updateCellState(state);
+                              },
+                              onClearSurroundingCells: (state) {
+                                ctrl.clearSurroundingCells(state);
+                              },
+                            );
+                          });
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          }),
+        ),
       ],
     );
   }
