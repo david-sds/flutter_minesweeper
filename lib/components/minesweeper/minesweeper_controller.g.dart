@@ -78,11 +78,11 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   }
 
   @override
-  void initBoard() {
+  void initBoard(Difficulty difficulty) {
     final _$actionInfo = _$MinesweeperControllerBaseActionController
         .startAction(name: 'MinesweeperControllerBase.initBoard');
     try {
-      return super.initBoard();
+      return super.initBoard(difficulty);
     } finally {
       _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
     }

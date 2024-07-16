@@ -24,7 +24,9 @@ class ClearedCell extends StatelessWidget {
       size: cellSize,
       bombNumber: neighborCells.bombNumber,
       bombNumberColor: neighborCells.bombNumberColor,
-      onLeftClick: () => onClearSurroundingCells(state),
+      onLeftClick: neighborCells.bombNumber > 0
+          ? () => onClearSurroundingCells(state)
+          : null,
       color: Colors.grey,
     );
   }

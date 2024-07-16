@@ -27,66 +27,67 @@ class CellShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(1),
+    return Container(
+      color: color,
       child: Material(
+        color: Colors.transparent,
         child: InkWell(
           onTap: onLeftClick,
           onSecondaryTap: onRightClick,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(width: 1),
-              color: color,
-            ),
-            width: size - 2,
-            height: size - 2,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (iconData != null) Icon(iconData),
-                    if (bombNumber != null && bombNumber != 0)
-                      Stack(
-                        children: [
-                          Text(
-                            bombNumber.toString(),
-                            style: TextStyle(
-                              fontSize: size * (2 / 5),
-                              foreground: Paint()
-                                ..style = PaintingStyle.stroke
-                                ..strokeWidth = 2
-                                ..color = Colors.black,
-                            ),
-                          ),
-                          Text(
-                            bombNumber.toString(),
-                            style: TextStyle(
-                              fontSize: size * (2 / 5),
-                              color: bombNumberColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-                if (showBombCoords)
+          child: Padding(
+            padding: const EdgeInsets.all(.5),
+            child: Container(
+              decoration: BoxDecoration(border: Border.all(width: .5)),
+              width: size - .5,
+              height: size - .5,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '(${state.x.toString()}, ${state.y.toString()})',
-                            style: const TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      )
+                      if (iconData != null) Icon(iconData),
+                      if (bombNumber != null && bombNumber != 0)
+                        Stack(
+                          children: [
+                            Text(
+                              bombNumber.toString(),
+                              style: TextStyle(
+                                fontSize: size * (2 / 5),
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 2
+                                  ..color = Colors.black,
+                              ),
+                            ),
+                            Text(
+                              bombNumber.toString(),
+                              style: TextStyle(
+                                fontSize: size * (2 / 5),
+                                color: bombNumberColor,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
-              ],
+                  if (showBombCoords)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '(${state.x.toString()}, ${state.y.toString()})',
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
         ),

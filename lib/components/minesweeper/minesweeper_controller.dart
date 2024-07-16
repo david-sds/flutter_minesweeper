@@ -27,13 +27,14 @@ abstract class MinesweeperControllerBase with Store {
   List<List<CellState>> get boardState => _boardState;
 
   @action
-  void initBoard() {
+  void initBoard(Difficulty difficulty) {
     try {
+      _difficulty = difficulty;
       final boardState = <List<CellState>>[];
 
-      for (var i = 0; i < difficulty.x; i++) {
+      for (var i = 0; i < _difficulty.x; i++) {
         boardState.add([]);
-        for (var j = 0; j < difficulty.y; j++) {
+        for (var j = 0; j < _difficulty.y; j++) {
           boardState[i].add(
             CellState(
               x: i,
@@ -46,11 +47,12 @@ abstract class MinesweeperControllerBase with Store {
       }
 
       final bombPositions =
-          List<int>.generate(difficulty.x * difficulty.y, (i) => i)..shuffle();
-      for (var i = 0; i < difficulty.bombNumber; i++) {
+          List<int>.generate(_difficulty.x * _difficulty.y, (i) => i)
+            ..shuffle();
+      for (var i = 0; i < _difficulty.bombNumber; i++) {
         final bombPos = bombPositions.removeLast();
-        final y = (bombPos / difficulty.x).floor();
-        final x = (bombPos % difficulty.x);
+        final y = (bombPos / _difficulty.x).floor();
+        final x = (bombPos % _difficulty.x);
 
         boardState[x][y].isBomb = true;
       }

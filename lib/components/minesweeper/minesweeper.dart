@@ -39,11 +39,11 @@ enum Difficulty {
 
 class Minesweeper extends StatefulWidget {
   const Minesweeper({
-    required this.difficulty,
+    required this.initialDifficulty,
     super.key,
   });
 
-  final Difficulty difficulty;
+  final Difficulty initialDifficulty;
 
   @override
   State<Minesweeper> createState() => _MinesweeperState();
@@ -54,8 +54,7 @@ class _MinesweeperState extends State<Minesweeper> {
 
   @override
   initState() {
-    ctrl.setDifficulty(widget.difficulty);
-    ctrl.initBoard();
+    ctrl.initBoard(widget.initialDifficulty);
     super.initState();
   }
 
@@ -63,12 +62,12 @@ class _MinesweeperState extends State<Minesweeper> {
     var maxCellSizeWidth = 30.0;
     var maxCellSizeHeight = 30.0;
 
-    if (widget.difficulty.x * maxCellSizeWidth > constraints.maxWidth) {
-      maxCellSizeWidth = constraints.maxWidth / widget.difficulty.x;
+    if (ctrl.difficulty.x * maxCellSizeWidth > constraints.maxWidth) {
+      maxCellSizeWidth = constraints.maxWidth / ctrl.difficulty.x;
     }
 
-    if (widget.difficulty.y * maxCellSizeHeight > constraints.maxHeight) {
-      maxCellSizeHeight = constraints.maxHeight / widget.difficulty.y;
+    if (ctrl.difficulty.y * maxCellSizeHeight > constraints.maxHeight) {
+      maxCellSizeHeight = constraints.maxHeight / ctrl.difficulty.y;
     }
 
     return maxCellSizeWidth < maxCellSizeHeight
@@ -82,49 +81,78 @@ class _MinesweeperState extends State<Minesweeper> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Observer(builder: (context) {
-          return Face(
-            state: ctrl.gameState,
-            onTap: () {
-              ctrl.initBoard();
-            },
+          return Stack(
+            children: [
+              Center(
+                child: Face(
+                  state: ctrl.gameState,
+                  onTap: () {
+                    ctrl.initBoard(ctrl.difficulty);
+                  },
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  DropdownButton<Difficulty>(
+                    value: ctrl.difficulty,
+                    items: Difficulty.values
+                        .map((value) => DropdownMenuItem(
+                              value: value,
+                              child: Text(
+                                value.name,
+                              ),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) ctrl.initBoard(value);
+                    },
+                  ),
+                ],
+              ),
+            ],
           );
         }),
         Expanded(
           child: LayoutBuilder(builder: (context, constraints) {
             return Container(
               color: Colors.grey[600],
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  ctrl.boardState.length,
-                  (y) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        ctrl.boardState[y].length,
-                        (x) {
-                          return Observer(builder: (context) {
-                            return Cell(
-                              cellSize: getCellSize(constraints),
-                              state: ctrl.boardState[x][y],
-                              gameState: ctrl.gameState,
-                              neighborCells: ctrl.getNeighborCells(
-                                ctrl.boardState[x][y],
-                              ),
-                              onChangeState: (state) {
-                                ctrl.updateCellState(state);
-                              },
-                              onClearSurroundingCells: (state) {
-                                ctrl.clearSurroundingCells(state);
-                              },
-                            );
-                          });
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
+              child: Observer(builder: (context) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    ctrl.boardState.length,
+                    (x) {
+                      return Container(
+                        color: Colors.black,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(
+                            ctrl.boardState[x].length,
+                            (y) {
+                              return Cell(
+                                cellSize: getCellSize(constraints),
+                                state: ctrl.boardState[x][y],
+                                gameState: ctrl.gameState,
+                                neighborCells: ctrl.getNeighborCells(
+                                  ctrl.boardState[x][y],
+                                ),
+                                onChangeState: (state) {
+                                  ctrl.updateCellState(state);
+                                },
+                                onClearSurroundingCells: (state) {
+                                  ctrl.clearSurroundingCells(state);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }),
             );
           }),
         ),

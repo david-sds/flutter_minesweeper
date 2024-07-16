@@ -38,6 +38,13 @@ class Cell extends StatelessWidget {
   Widget build(BuildContext context) {
     if (gameState == GameState.gameOver) {
       if (state.isBomb) {
+        if (state.type == CellStateTypes.flag) {
+          return FlaggedCell(
+            state: state,
+            onChangeState: onChangeState,
+            cellSize: cellSize,
+          );
+        }
         return ExplodedCell(
           state: state,
           onChangeState: onChangeState,
