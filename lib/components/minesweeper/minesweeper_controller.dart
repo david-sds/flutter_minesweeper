@@ -67,6 +67,7 @@ abstract class MinesweeperControllerBase with Store {
   GameState get gameState {
     final boardState = [..._boardState];
     var isEveryEmptyCellCleared = true;
+    var isEveryEmptyCellDefault = true;
 
     for (final boardRowState in boardState) {
       for (final cellState in boardRowState) {
@@ -76,7 +77,14 @@ abstract class MinesweeperControllerBase with Store {
         if (!cellState.isBomb && cellState.type != CellStateTypes.cleared) {
           isEveryEmptyCellCleared = false;
         }
+        if (cellState.type != CellStateTypes.default_) {
+          isEveryEmptyCellDefault = false;
+        }
       }
+    }
+
+    if (isEveryEmptyCellDefault) {
+      return GameState.ready;
     }
 
     if (isEveryEmptyCellCleared) {

@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
+import 'package:flutter_minesweeper/components/minesweeper/board/board.dart';
 import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 
 enum Difficulty {
   classic(
@@ -50,33 +53,88 @@ class Minesweeper extends StatefulWidget {
 }
 
 class _MinesweeperState extends State<Minesweeper> {
+  late ReactionDisposer reactionDisposer;
+  final Stopwatch stopwatch = Stopwatch();
+  Timer timer = Timer(Duration.zero, () {});
   final ctrl = MinesweeperController();
 
   @override
   initState() {
+    reactionDisposer = reaction(
+      (_) => ctrl.gameState,
+      (value) {
+        switch (value) {
+          case GameState.ready:
+            stopwatch.reset();
+            break;
+          case GameState.playing:
+            stopwatch.start();
+            timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+              setState(() {});
+            });
+            break;
+          case GameState.victory:
+            stopwatch.stop();
+            break;
+          case GameState.gameOver:
+            stopwatch.stop();
+            break;
+          default:
+            break;
+        }
+      },
+    );
     ctrl.initBoard(widget.initialDifficulty);
     super.initState();
   }
 
-  double getCellSize(BoxConstraints constraints) {
-    var maxCellSizeWidth = 30.0;
-    var maxCellSizeHeight = 30.0;
+  @override
+  void dispose() {
+    reactionDisposer.reaction.dispose();
+    super.dispose();
+  }
 
-    if (ctrl.difficulty.x * maxCellSizeWidth > constraints.maxWidth) {
-      maxCellSizeWidth = constraints.maxWidth / ctrl.difficulty.x;
+  void toggleStopwatch() {
+    if (stopwatch.isRunning && timer.isActive) {
+      stopwatch.reset();
+      stopwatch.stop();
+      timer.cancel();
+    } else {
+      stopwatch.start();
+      timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+        setState(() {});
+      });
+    }
+  }
+
+  String returnFormattedText() {
+    var milli = stopwatch.elapsed.inMilliseconds;
+
+    String milliseconds = (milli % 1000).toString().padLeft(3, "0");
+    String seconds = ((milli ~/ 1000) % 60).toString().padLeft(2, "0");
+    String minutes = ((milli ~/ 1000) ~/ 60).toString().padLeft(2, "0");
+
+    return "$minutes:$seconds:$milliseconds";
+  }
+
+  double getCellSize(BoxConstraints constraints, isHorizontalView) {
+    const defaultCellSizeWidth = 30.0;
+    final horizontalCellsNumber =
+        isHorizontalView ? ctrl.difficulty.x : ctrl.difficulty.y;
+    var cellSize = defaultCellSizeWidth;
+
+    if (horizontalCellsNumber * cellSize > constraints.maxWidth) {
+      cellSize = constraints.maxWidth / horizontalCellsNumber;
     }
 
-    if (ctrl.difficulty.y * maxCellSizeHeight > constraints.maxHeight) {
-      maxCellSizeHeight = constraints.maxHeight / ctrl.difficulty.y;
-    }
-
-    return maxCellSizeWidth < maxCellSizeHeight
-        ? maxCellSizeWidth
-        : maxCellSizeHeight;
+    return cellSize;
   }
 
   @override
   Widget build(BuildContext context) {
+    final isHorizontalView =
+        MediaQuery.sizeOf(context).width > MediaQuery.sizeOf(context).height;
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -91,24 +149,28 @@ class _MinesweeperState extends State<Minesweeper> {
                   },
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  DropdownButton<Difficulty>(
-                    value: ctrl.difficulty,
-                    items: Difficulty.values
-                        .map((value) => DropdownMenuItem(
-                              value: value,
-                              child: Text(
-                                value.name,
-                              ),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) ctrl.initBoard(value);
-                    },
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(returnFormattedText()),
+                    DropdownButton<Difficulty>(
+                      value: ctrl.difficulty,
+                      items: Difficulty.values
+                          .map((value) => DropdownMenuItem(
+                                value: value,
+                                child: Text(
+                                  value.name,
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) ctrl.initBoard(value);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           );
@@ -116,43 +178,33 @@ class _MinesweeperState extends State<Minesweeper> {
         Expanded(
           child: LayoutBuilder(builder: (context, constraints) {
             return Container(
+              width: double.infinity,
               color: Colors.grey[600],
-              child: Observer(builder: (context) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    ctrl.boardState.length,
-                    (x) {
-                      return Container(
-                        color: Colors.black,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: List.generate(
-                            ctrl.boardState[x].length,
-                            (y) {
-                              return Cell(
-                                cellSize: getCellSize(constraints),
-                                state: ctrl.boardState[x][y],
-                                gameState: ctrl.gameState,
-                                neighborCells: ctrl.getNeighborCells(
-                                  ctrl.boardState[x][y],
-                                ),
-                                onChangeState: (state) {
-                                  ctrl.updateCellState(state);
-                                },
-                                onClearSurroundingCells: (state) {
-                                  ctrl.clearSurroundingCells(state);
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
+              child: Center(
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Observer(builder: (context) {
+                          return Board(
+                            boardState: ctrl.boardState,
+                            cellSize:
+                                getCellSize(constraints, isHorizontalView),
+                            gameState: ctrl.gameState,
+                            isHorizontalView: isHorizontalView,
+                            onGetNeighborCells: (cellState) =>
+                                ctrl.getNeighborCells(cellState),
+                            onClearSurroundingCells: ctrl.clearSurroundingCells,
+                            onUpdateCellState: ctrl.updateCellState,
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                );
-              }),
+                ),
+              ),
             );
           }),
         ),

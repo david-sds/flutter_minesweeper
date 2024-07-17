@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
 
@@ -34,6 +37,9 @@ class CellShell extends StatelessWidget {
         child: InkWell(
           onTap: onLeftClick,
           onSecondaryTap: onRightClick,
+          onLongPress: !kIsWeb && (Platform.isAndroid || Platform.isIOS)
+              ? onRightClick
+              : null,
           child: Padding(
             padding: const EdgeInsets.all(.5),
             child: Container(
