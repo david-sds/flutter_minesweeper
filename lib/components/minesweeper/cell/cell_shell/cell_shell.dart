@@ -6,7 +6,7 @@ class CellShell extends StatelessWidget {
     required this.state,
     required this.size,
     this.color = Colors.transparent,
-    this.iconData,
+    this.image,
     this.onLeftClick,
     this.onRightClick,
     this.bombNumber,
@@ -18,7 +18,7 @@ class CellShell extends StatelessWidget {
   final CellState state;
   final Color? color;
   final double size;
-  final IconData? iconData;
+  final Widget? image;
   final void Function()? onLeftClick;
   final void Function()? onRightClick;
   final int? bombNumber;
@@ -46,7 +46,7 @@ class CellShell extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (iconData != null) Icon(iconData),
+                      if (image != null) SizedBox(child: image),
                       if (bombNumber != null && bombNumber != 0)
                         Stack(
                           children: [

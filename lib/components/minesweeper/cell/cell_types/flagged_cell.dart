@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_shell/cell_shell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class FlaggedCell extends StatelessWidget {
   const FlaggedCell({
@@ -21,7 +20,7 @@ class FlaggedCell extends StatelessWidget {
     return CellShell(
       state: state,
       size: cellSize,
-      iconData: Symbols.flag,
+      image: Image.asset('assets/images/flag.png'),
       color: Colors.yellow,
       onRightClick: () => onChangeState(
         state.copyWith(
