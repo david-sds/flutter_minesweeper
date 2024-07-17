@@ -54,9 +54,11 @@ class Minesweeper extends StatefulWidget {
 
 class _MinesweeperState extends State<Minesweeper> {
   late ReactionDisposer reactionDisposer;
-  final Stopwatch stopwatch = Stopwatch();
+  Stopwatch stopwatch = Stopwatch();
   Timer timer = Timer(Duration.zero, () {});
   final ctrl = MinesweeperController();
+  final contentPadding = 8.0;
+  final defaultCellSizeWidth = 30.0;
 
   @override
   initState() {
@@ -65,7 +67,7 @@ class _MinesweeperState extends State<Minesweeper> {
       (value) {
         switch (value) {
           case GameState.ready:
-            stopwatch.reset();
+            stopwatch = Stopwatch();
             break;
           case GameState.playing:
             stopwatch.start();
@@ -118,13 +120,13 @@ class _MinesweeperState extends State<Minesweeper> {
   }
 
   double getCellSize(BoxConstraints constraints, isHorizontalView) {
-    const defaultCellSizeWidth = 30.0;
+    final padding = contentPadding * 2;
     final horizontalCellsNumber =
         isHorizontalView ? ctrl.difficulty.x : ctrl.difficulty.y;
     var cellSize = defaultCellSizeWidth;
 
-    if (horizontalCellsNumber * cellSize > constraints.maxWidth) {
-      cellSize = constraints.maxWidth / horizontalCellsNumber;
+    if ((horizontalCellsNumber * cellSize) + padding > constraints.maxWidth) {
+      cellSize = (constraints.maxWidth - padding) / horizontalCellsNumber;
     }
 
     return cellSize;
@@ -188,16 +190,20 @@ class _MinesweeperState extends State<Minesweeper> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Observer(builder: (context) {
-                          return Board(
-                            boardState: ctrl.boardState,
-                            cellSize:
-                                getCellSize(constraints, isHorizontalView),
-                            gameState: ctrl.gameState,
-                            isHorizontalView: isHorizontalView,
-                            onGetNeighborCells: (cellState) =>
-                                ctrl.getNeighborCells(cellState),
-                            onClearSurroundingCells: ctrl.clearSurroundingCells,
-                            onUpdateCellState: ctrl.updateCellState,
+                          return Padding(
+                            padding: EdgeInsets.all(contentPadding),
+                            child: Board(
+                              boardState: ctrl.boardState,
+                              cellSize:
+                                  getCellSize(constraints, isHorizontalView),
+                              gameState: ctrl.gameState,
+                              isHorizontalView: isHorizontalView,
+                              onGetNeighborCells: (cellState) =>
+                                  ctrl.getNeighborCells(cellState),
+                              onClearSurroundingCells:
+                                  ctrl.clearSurroundingCells,
+                              onUpdateCellState: ctrl.updateCellState,
+                            ),
                           );
                         }),
                       ],

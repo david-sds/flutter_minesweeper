@@ -44,8 +44,8 @@ class CellShell extends StatelessWidget {
             padding: const EdgeInsets.all(.5),
             child: Container(
               decoration: BoxDecoration(border: Border.all(width: .5)),
-              width: size - .5,
-              height: size - .5,
+              width: size - 1,
+              height: size - 1,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
