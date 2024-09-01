@@ -58,7 +58,11 @@ class CellShell extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (image != null) SizedBox(child: image),
+                      if (image != null)
+                        SizedBox(
+                          width: size * .60,
+                          child: image,
+                        ),
                       if (bombNumber != null && bombNumber != 0)
                         Stack(
                           children: [

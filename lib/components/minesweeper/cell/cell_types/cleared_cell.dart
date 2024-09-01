@@ -30,6 +30,7 @@ class ClearedCell extends StatelessWidget {
           ? () => onClearSurroundingCells(state)
           : null,
       color: Colors.grey,
+      showHover: showHover,
     );
   }
 }

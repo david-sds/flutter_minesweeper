@@ -113,7 +113,6 @@ abstract class MinesweeperControllerBase with Store {
   @action
   void clearSurroundingCells(CellState value) {
     try {
-      updateCellState(value);
       final neighborCells = getNeighborCells(value);
 
       if (neighborCells.bombNumber == 0) {
