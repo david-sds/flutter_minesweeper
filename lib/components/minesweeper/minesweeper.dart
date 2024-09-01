@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/board/board.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cronometer/cronometer.dart';
+import 'package:flutter_minesweeper/components/minesweeper/cronometer/cronometer_controller.dart';
 import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -57,6 +59,7 @@ class _MinesweeperState extends State<Minesweeper> {
   Stopwatch stopwatch = Stopwatch();
   Timer timer = Timer(Duration.zero, () {});
   final _scrollController = ScrollController();
+  final _cronometerController = CronometerController();
   final ctrl = MinesweeperController();
   final contentPadding = 8.0;
   final defaultCellSizeWidth = 45.0;
@@ -68,19 +71,16 @@ class _MinesweeperState extends State<Minesweeper> {
       (value) {
         switch (value) {
           case GameState.ready:
-            stopwatch = Stopwatch();
+            _cronometerController.reset();
             break;
           case GameState.playing:
-            stopwatch.start();
-            timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
-              setState(() {});
-            });
+            _cronometerController.start();
             break;
           case GameState.victory:
-            stopwatch.stop();
+            _cronometerController.stop();
             break;
           case GameState.gameOver:
-            stopwatch.stop();
+            _cronometerController.stop();
             break;
           default:
             break;
@@ -149,6 +149,7 @@ class _MinesweeperState extends State<Minesweeper> {
                   state: ctrl.gameState,
                   onTap: () {
                     ctrl.initBoard(ctrl.difficulty);
+                    _cronometerController.reset();
                   },
                 ),
               ),
@@ -157,7 +158,9 @@ class _MinesweeperState extends State<Minesweeper> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(returnFormattedText()),
+                    Cronometer(
+                      controller: _cronometerController,
+                    ),
                     DropdownButton<Difficulty>(
                       value: ctrl.difficulty,
                       items: Difficulty.values
