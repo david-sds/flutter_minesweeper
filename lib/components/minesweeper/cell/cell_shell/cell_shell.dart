@@ -14,6 +14,7 @@ class CellShell extends StatelessWidget {
     this.onRightClick,
     this.bombNumber,
     this.bombNumberColor,
+    this.showHover = true,
     this.showBombCoords = false,
     super.key,
   });
@@ -26,6 +27,7 @@ class CellShell extends StatelessWidget {
   final void Function()? onRightClick;
   final int? bombNumber;
   final Color? bombNumberColor;
+  final bool showHover;
   final bool showBombCoords;
 
   @override
@@ -35,6 +37,10 @@ class CellShell extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          hoverColor: showHover ? null : Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          focusColor: Colors.transparent,
           onTap: onLeftClick,
           onSecondaryTap: onRightClick,
           onLongPress: !kIsWeb && (Platform.isAndroid || Platform.isIOS)

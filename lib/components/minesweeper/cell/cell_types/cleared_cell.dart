@@ -9,6 +9,7 @@ class ClearedCell extends StatelessWidget {
     required this.neighborCells,
     required this.onClearSurroundingCells,
     required this.cellSize,
+    required this.showHover,
     super.key,
   });
 
@@ -16,6 +17,7 @@ class ClearedCell extends StatelessWidget {
   final CellState state;
   final NeighborCells neighborCells;
   final void Function(CellState) onClearSurroundingCells;
+  final bool showHover;
 
   @override
   Widget build(BuildContext context) {

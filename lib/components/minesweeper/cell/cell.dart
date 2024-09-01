@@ -23,7 +23,7 @@ class Cell extends StatelessWidget {
     required this.neighborCells,
     required this.onChangeState,
     required this.onClearSurroundingCells,
-    this.cellSize = 30,
+    required this.cellSize,
     super.key,
   });
 
@@ -56,6 +56,7 @@ class Cell extends StatelessWidget {
           neighborCells: neighborCells,
           onClearSurroundingCells: onClearSurroundingCells,
           cellSize: cellSize,
+          showHover: false,
         );
       }
     }
@@ -75,6 +76,7 @@ class Cell extends StatelessWidget {
           neighborCells: neighborCells,
           onClearSurroundingCells: onClearSurroundingCells,
           cellSize: cellSize,
+          showHover: false,
         );
       case CellStateTypes.exploded:
         return ExplodedCell(

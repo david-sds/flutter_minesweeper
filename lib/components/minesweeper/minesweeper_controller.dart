@@ -131,6 +131,7 @@ abstract class MinesweeperControllerBase with Store {
     final surroundingFlaggedCellsNumber = neighborCells.values
         .where((cell) => cell?.type == CellStateTypes.flag)
         .length;
+
     if (bombNumber == surroundingFlaggedCellsNumber) {
       for (final neighborCell in neighborCells.values) {
         if (neighborCell == null || neighborCell.type == CellStateTypes.flag) {

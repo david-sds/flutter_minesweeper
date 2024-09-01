@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 enum GameState {
+  ready(faceImagePath: 'assets/images/playing.png'),
   playing(faceImagePath: 'assets/images/playing.png'),
   victory(faceImagePath: 'assets/images/victory.png'),
   gameOver(faceImagePath: 'assets/images/game_over.png');

@@ -56,9 +56,10 @@ class _MinesweeperState extends State<Minesweeper> {
   late ReactionDisposer reactionDisposer;
   Stopwatch stopwatch = Stopwatch();
   Timer timer = Timer(Duration.zero, () {});
+  final _scrollController = ScrollController();
   final ctrl = MinesweeperController();
   final contentPadding = 8.0;
-  final defaultCellSizeWidth = 30.0;
+  final defaultCellSizeWidth = 45.0;
 
   @override
   initState() {
@@ -103,7 +104,7 @@ class _MinesweeperState extends State<Minesweeper> {
       timer.cancel();
     } else {
       stopwatch.start();
-      timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+      timer = Timer.periodic(const Duration(milliseconds: 300), (timer) {
         setState(() {});
       });
     }
@@ -184,8 +185,10 @@ class _MinesweeperState extends State<Minesweeper> {
               color: Colors.grey[600],
               child: Center(
                 child: Scrollbar(
+                  controller: _scrollController,
                   thumbVisibility: true,
                   child: SingleChildScrollView(
+                    controller: _scrollController,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -194,15 +197,16 @@ class _MinesweeperState extends State<Minesweeper> {
                             padding: EdgeInsets.all(contentPadding),
                             child: Board(
                               boardState: ctrl.boardState,
-                              cellSize:
-                                  getCellSize(constraints, isHorizontalView),
                               gameState: ctrl.gameState,
                               isHorizontalView: isHorizontalView,
-                              onGetNeighborCells: (cellState) =>
-                                  ctrl.getNeighborCells(cellState),
+                              onGetNeighborCells: ctrl.getNeighborCells,
                               onClearSurroundingCells:
                                   ctrl.clearSurroundingCells,
                               onUpdateCellState: ctrl.updateCellState,
+                              cellSize: getCellSize(
+                                constraints,
+                                isHorizontalView,
+                              ),
                             ),
                           );
                         }),
