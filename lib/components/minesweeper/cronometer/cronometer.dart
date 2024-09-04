@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cronometer/cronometer_controller.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-const maxNumberOfSeconds = 1 * 60 * 60;
+const maxNumberOfSeconds = 1.0 * 60 * 60;
 
 class Cronometer extends StatefulWidget {
   const Cronometer({
@@ -24,10 +24,10 @@ class _CronometerState extends State<Cronometer> {
         return TweenAnimationBuilder(
           tween: Tween<double>(
             begin: 0,
-            end: maxNumberOfSeconds as double,
+            end: maxNumberOfSeconds,
           ),
-          duration: (const Duration(
-            seconds: maxNumberOfSeconds,
+          duration: (Duration(
+            seconds: maxNumberOfSeconds.round(),
           )),
           builder: (context, value, child) {
             return Text('${value.toStringAsFixed(3)}s');

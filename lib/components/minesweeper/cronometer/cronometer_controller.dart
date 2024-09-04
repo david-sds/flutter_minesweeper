@@ -9,7 +9,12 @@ abstract class _CronometerControllerBase with Store {
   final Stopwatch _stopwatch = Stopwatch();
 
   @computed
-  double get elapsedTime => _stopwatch.elapsed.inMilliseconds / 1000;
+  double get elapsedTime {
+    if (!_isEnded && !_isStarted) {
+      return 0.0;
+    }
+    return _stopwatch.elapsed.inMilliseconds / 1000;
+  }
 
   @observable
   bool _isStarted = false;

@@ -97,29 +97,6 @@ class _MinesweeperState extends State<Minesweeper> {
     super.dispose();
   }
 
-  void toggleStopwatch() {
-    if (stopwatch.isRunning && timer.isActive) {
-      stopwatch.reset();
-      stopwatch.stop();
-      timer.cancel();
-    } else {
-      stopwatch.start();
-      timer = Timer.periodic(const Duration(milliseconds: 300), (timer) {
-        setState(() {});
-      });
-    }
-  }
-
-  String returnFormattedText() {
-    var milli = stopwatch.elapsed.inMilliseconds;
-
-    String milliseconds = (milli % 1000).toString().padLeft(3, "0");
-    String seconds = ((milli ~/ 1000) % 60).toString().padLeft(2, "0");
-    String minutes = ((milli ~/ 1000) ~/ 60).toString().padLeft(2, "0");
-
-    return "$minutes:$seconds:$milliseconds";
-  }
-
   double getCellSize(BoxConstraints constraints, isHorizontalView) {
     final padding = contentPadding * 2;
     final horizontalCellsNumber =
@@ -148,8 +125,8 @@ class _MinesweeperState extends State<Minesweeper> {
                 child: Face(
                   state: ctrl.gameState,
                   onTap: () {
-                    ctrl.initBoard(ctrl.difficulty);
                     _cronometerController.reset();
+                    ctrl.initBoard(ctrl.difficulty);
                   },
                 ),
               ),
