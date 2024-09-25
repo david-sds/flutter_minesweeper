@@ -131,26 +131,60 @@ class _MinesweeperState extends State<Minesweeper> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 6.0,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Cronometer(
-                      controller: _cronometerController,
+                    OverflowBar(
+                      children: [
+                        Chip(
+                          avatar: Image.asset('assets/images/bomb.png'),
+                          label: const Text('10'),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Chip(
+                          avatar: const Icon(Icons.schedule),
+                          label: Cronometer(
+                            controller: _cronometerController,
+                          ),
+                        ),
+                      ],
                     ),
-                    DropdownButton<Difficulty>(
-                      value: ctrl.difficulty,
-                      items: Difficulty.values
-                          .map((value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(
-                                  value.name,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        if (value != null) ctrl.initBoard(value);
-                      },
+                    SizedBox(
+                      width: 150,
+                      height: 36,
+                      child: DropdownButtonFormField<Difficulty>(
+                        value: ctrl.difficulty,
+                        items: Difficulty.values
+                            .map((value) => DropdownMenuItem(
+                                  value: value,
+                                  child: Text(
+                                    value.name,
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) ctrl.initBoard(value);
+                        },
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.speed),
+                          contentPadding: EdgeInsets.only(left: 6),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
+                            borderSide: BorderSide(
+                              width: .5,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

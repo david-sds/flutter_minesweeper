@@ -14,7 +14,7 @@ enum GameState {
 class Face extends StatelessWidget {
   const Face({
     required this.state,
-    this.size = 30,
+    this.size = 36,
     this.padding = const EdgeInsets.all(6),
     this.onTap,
     super.key,

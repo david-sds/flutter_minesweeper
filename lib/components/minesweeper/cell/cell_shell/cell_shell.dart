@@ -69,17 +69,17 @@ class CellShell extends StatelessWidget {
                             Text(
                               bombNumber.toString(),
                               style: TextStyle(
-                                fontSize: size * (2 / 5),
+                                fontSize: size * .45,
                                 foreground: Paint()
                                   ..style = PaintingStyle.stroke
                                   ..strokeWidth = 2
-                                  ..color = Colors.black,
+                                  ..color = Colors.black54,
                               ),
                             ),
                             Text(
                               bombNumber.toString(),
                               style: TextStyle(
-                                fontSize: size * (2 / 5),
+                                fontSize: size * .45,
                                 color: bombNumberColor,
                               ),
                             ),
