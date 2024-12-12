@@ -164,32 +164,39 @@ class _MinesweeperState extends State<Minesweeper> {
                       ],
                     ),
                     SizedBox(
-                      width: 150,
-                      height: 36,
+                      width: 130,
+                      height: 34,
                       child: DropdownButtonFormField<Difficulty>(
                         value: ctrl.difficulty,
                         items: Difficulty.values
-                            .map((value) => DropdownMenuItem(
-                                  value: value,
-                                  child: Text(
-                                    value.name,
-                                  ),
-                                ))
+                            .map(
+                              (value) => DropdownMenuItem(
+                                value: value,
+                                child: Text(
+                                  value.name,
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            )
                             .toList(),
                         onChanged: (value) {
                           if (value != null) ctrl.initBoard(value);
                         },
                         decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.speed),
-                          contentPadding: EdgeInsets.only(left: 6),
-                          border: OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(
-                              Radius.circular(10.0),
+                              Radius.circular(8.0),
                             ),
                             borderSide: BorderSide(
-                              width: .5,
+                              width: 1,
+                              color: Colors.black54,
                             ),
                           ),
+                          prefixIcon: Icon(
+                            Icons.speed,
+                            size: 19,
+                          ),
+                          contentPadding: EdgeInsets.only(left: 6),
                         ),
                       ),
                     ),
