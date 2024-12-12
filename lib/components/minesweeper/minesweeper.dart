@@ -115,19 +115,24 @@ class _MinesweeperState extends State<Minesweeper> {
     final isHorizontalView =
         MediaQuery.sizeOf(context).width > MediaQuery.sizeOf(context).height;
 
+    final paddingTopFace = MediaQuery.sizeOf(context).width < 450 ? 42.0 : 0.0;
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
         Observer(builder: (context) {
           return Stack(
             children: [
-              Center(
-                child: Face(
-                  state: ctrl.gameState,
-                  onTap: () {
-                    _cronometerController.reset();
-                    ctrl.initBoard(ctrl.difficulty);
-                  },
+              Padding(
+                padding: EdgeInsets.only(top: paddingTopFace),
+                child: Center(
+                  child: Face(
+                    state: ctrl.gameState,
+                    onTap: () {
+                      _cronometerController.reset();
+                      ctrl.initBoard(ctrl.difficulty);
+                    },
+                  ),
                 ),
               ),
               Padding(

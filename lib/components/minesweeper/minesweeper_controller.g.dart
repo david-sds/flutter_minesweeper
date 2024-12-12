@@ -30,6 +30,13 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
       (_$gameStateComputed ??= Computed<GameState>(() => super.gameState,
               name: 'MinesweeperControllerBase.gameState'))
           .value;
+  Computed<int>? _$numberFlaggedComputed;
+
+  @override
+  int get numberFlagged =>
+      (_$numberFlaggedComputed ??= Computed<int>(() => super.numberFlagged,
+              name: 'MinesweeperControllerBase.numberFlagged'))
+          .value;
 
   late final _$_difficultyAtom =
       Atom(name: 'MinesweeperControllerBase._difficulty', context: context);
@@ -126,7 +133,8 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
     return '''
 difficulty: ${difficulty},
 boardState: ${boardState},
-gameState: ${gameState}
+gameState: ${gameState},
+numberFlagged: ${numberFlagged}
     ''';
   }
 }
