@@ -250,4 +250,17 @@ abstract class MinesweeperControllerBase with Store {
     }
     return NeighborCells();
   }
+
+  @computed
+  int get numberFlagged {
+    var flagCount = 0;
+    for (final cellList in boardState) {
+      for (final cell in cellList) {
+        if (cell.type == CellStateTypes.flag) {
+          flagCount++;
+        }
+      }
+    }
+    return difficulty.bombNumber - flagCount;
+  }
 }

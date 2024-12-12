@@ -142,8 +142,10 @@ class _MinesweeperState extends State<Minesweeper> {
                     OverflowBar(
                       children: [
                         Chip(
-                          avatar: Image.asset('assets/images/bomb.png'),
-                          label: const Text('10'),
+                          avatar: Image.asset('assets/images/flag.png'),
+                          label: Text(
+                            ctrl.numberFlagged.toString(),
+                          ),
                         ),
                         const SizedBox(
                           width: 12,
