@@ -117,34 +117,6 @@ class _MinesweeperState extends State<Minesweeper> {
 
     final paddingTopFace = MediaQuery.sizeOf(context).width < 450 ? 42.0 : 0.0;
 
-    void a() {
-      showMenu(
-          context: context,
-          elevation: 16,
-          position: RelativeRect.fromRect(
-            Offset.zero & Size.zero, // Posição e tamanho do Container
-            Offset.zero & Size.zero, // Tamanho da tela completa
-          ),
-          surfaceTintColor: Colors.red,
-          constraints: const BoxConstraints(
-            minWidth: 200,
-          ),
-          items: [
-            PopupMenuItem(
-              onTap: () {},
-              child: Text('oi1'),
-            ),
-            PopupMenuItem(
-              onTap: () {},
-              child: Text('oi2'),
-            ),
-            PopupMenuItem(
-              onTap: () {},
-              child: Text('oi3'),
-            ),
-          ]);
-    }
-
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -157,7 +129,6 @@ class _MinesweeperState extends State<Minesweeper> {
                   child: Face(
                     state: ctrl.gameState,
                     onTap: () {
-                      a();
                       _cronometerController.reset();
                       ctrl.initBoard(ctrl.difficulty);
                     },
