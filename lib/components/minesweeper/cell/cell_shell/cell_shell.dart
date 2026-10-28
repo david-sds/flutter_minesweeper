@@ -30,6 +30,8 @@ class CellShell extends StatelessWidget {
   final bool showHover;
   final bool showBombCoords;
 
+  double get fontSize => .55;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -69,17 +71,17 @@ class CellShell extends StatelessWidget {
                             Text(
                               bombNumber.toString(),
                               style: TextStyle(
-                                fontSize: size * .45,
+                                fontSize: size * fontSize,
                                 foreground: Paint()
                                   ..style = PaintingStyle.stroke
-                                  ..strokeWidth = 2
+                                  ..strokeWidth = 3
                                   ..color = Colors.black54,
                               ),
                             ),
                             Text(
                               bombNumber.toString(),
                               style: TextStyle(
-                                fontSize: size * .45,
+                                fontSize: size * fontSize,
                                 color: bombNumberColor,
                               ),
                             ),

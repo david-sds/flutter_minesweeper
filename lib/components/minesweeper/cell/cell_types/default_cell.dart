@@ -25,34 +25,26 @@ class DefaultCell extends StatelessWidget {
     return CellShell(
       state: state,
       size: cellSize,
-      color: Colors.blue,
+      color: Theme.of(context).colorScheme.primary,
       onLeftClick: () {
         if (state.isBomb) {
           onChangeState(
-            state.copyWith(
-              type: CellStateTypes.exploded,
-            ),
+            state.copyWith(type: CellStateTypes.exploded),
           );
         } else {
           if (neighborCells.bombNumber == 0) {
             onClearSurroundingCells(
-              state.copyWith(
-                type: CellStateTypes.cleared,
-              ),
+              state.copyWith(type: CellStateTypes.cleared),
             );
           } else {
             onChangeState(
-              state.copyWith(
-                type: CellStateTypes.cleared,
-              ),
+              state.copyWith(type: CellStateTypes.cleared),
             );
           }
         }
       },
       onRightClick: () => onChangeState(
-        state.copyWith(
-          type: CellStateTypes.flag,
-        ),
+        state.copyWith(type: CellStateTypes.flag),
       ),
     );
   }
