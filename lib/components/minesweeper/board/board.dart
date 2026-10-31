@@ -33,26 +33,23 @@ class Board extends StatelessWidget {
       children: List.generate(
         boardState.length,
         (x) {
-          return Container(
-            color: Colors.black,
-            child: Flex(
-              direction: isHorizontalView ? Axis.vertical : Axis.horizontal,
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                boardState[x].length,
-                (y) {
-                  final cellState = boardState[x][y];
-                  return Cell(
-                    cellSize: cellSize,
-                    state: cellState,
-                    gameState: gameState,
-                    neighborCells: onGetNeighborCells(cellState),
-                    onChangeState: onUpdateCellState,
-                    onClearSurroundingCells: onClearSurroundingCells,
-                  );
-                },
-              ),
+          return Flex(
+            direction: isHorizontalView ? Axis.vertical : Axis.horizontal,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              boardState[x].length,
+              (y) {
+                final cellState = boardState[x][y];
+                return Cell(
+                  cellSize: cellSize,
+                  state: cellState,
+                  gameState: gameState,
+                  neighborCells: onGetNeighborCells(cellState),
+                  onChangeState: onUpdateCellState,
+                  onClearSurroundingCells: onClearSurroundingCells,
+                );
+              },
             ),
           );
         },

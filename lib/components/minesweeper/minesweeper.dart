@@ -10,26 +10,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 
 enum Difficulty {
-  classic(
-    x: 8,
-    y: 8,
-    bombNumber: 9,
-  ),
-  easy(
-    x: 9,
-    y: 9,
-    bombNumber: 10,
-  ),
-  medium(
-    x: 16,
-    y: 16,
-    bombNumber: 40,
-  ),
-  expert(
-    x: 30,
-    y: 16,
-    bombNumber: 99,
-  );
+  classic(x: 8, y: 8, bombNumber: 9),
+  easy(x: 9, y: 9, bombNumber: 10),
+  medium(x: 16, y: 16, bombNumber: 40),
+  expert(x: 30, y: 16, bombNumber: 99);
 
   const Difficulty({
     required this.x,
@@ -126,13 +110,15 @@ class _MinesweeperState extends State<Minesweeper> {
               Padding(
                 padding: EdgeInsets.only(top: paddingTopFace),
                 child: Center(
-                  child: Face(
-                    state: ctrl.gameState,
-                    onTap: () {
-                      _cronometerController.reset();
-                      ctrl.initBoard(ctrl.difficulty);
-                    },
-                  ),
+                  child: Observer(builder: (context) {
+                    return Face(
+                      state: ctrl.gameState,
+                      onTap: () {
+                        _cronometerController.reset();
+                        ctrl.initBoard(ctrl.difficulty);
+                      },
+                    );
+                  }),
                 ),
               ),
               Padding(
@@ -146,12 +132,14 @@ class _MinesweeperState extends State<Minesweeper> {
                   children: [
                     OverflowBar(
                       children: [
-                        Chip(
-                          avatar: Image.asset('assets/images/flag.png'),
-                          label: Text(
-                            ctrl.numberFlagged.toString(),
-                          ),
-                        ),
+                        Observer(builder: (context) {
+                          return Chip(
+                            avatar: Image.asset('assets/images/flag.png'),
+                            label: Text(
+                              ctrl.numberFlagged.toString(),
+                            ),
+                          );
+                        }),
                         const SizedBox(
                           width: 12,
                         ),
@@ -163,43 +151,35 @@ class _MinesweeperState extends State<Minesweeper> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      width: 130,
-                      height: 34,
-                      child: DropdownButtonFormField<Difficulty>(
-                        value: ctrl.difficulty,
-                        items: Difficulty.values
-                            .map(
-                              (value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(
-                                  value.name,
-                                  style: TextStyle(fontSize: 14),
+                    Observer(builder: (context) {
+                      return SizedBox(
+                        width: 130,
+                        height: 34,
+                        child: DropdownButtonFormField<Difficulty>(
+                          value: ctrl.difficulty,
+                          items: Difficulty.values
+                              .map(
+                                (value) => DropdownMenuItem(
+                                  value: value,
+                                  child: Text(
+                                    value.name,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
                                 ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) ctrl.initBoard(value);
-                        },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8.0),
-                            ),
-                            borderSide: BorderSide(
-                              width: 1,
-                              color: Colors.black54,
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) ctrl.initBoard(value);
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.speed,
+                              size: 19,
                             ),
                           ),
-                          prefixIcon: Icon(
-                            Icons.speed,
-                            size: 19,
-                          ),
-                          contentPadding: EdgeInsets.only(left: 6),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -208,9 +188,8 @@ class _MinesweeperState extends State<Minesweeper> {
         }),
         Expanded(
           child: LayoutBuilder(builder: (context, constraints) {
-            return Container(
+            return SizedBox(
               width: double.infinity,
-              color: Colors.grey[600],
               child: Center(
                 child: Scrollbar(
                   controller: _scrollController,

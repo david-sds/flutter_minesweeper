@@ -23,9 +23,7 @@ class FlaggedCell extends StatelessWidget {
       image: Image.asset('assets/images/flag.png'),
       color: Colors.yellow,
       onRightClick: () => onChangeState(
-        state.copyWith(
-          type: CellStateTypes.question,
-        ),
+        state.copyWith(type: CellStateTypes.question),
       ),
     );
   }

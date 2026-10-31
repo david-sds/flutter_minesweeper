@@ -23,9 +23,7 @@ class QuestionCell extends StatelessWidget {
       image: Image.asset('assets/images/question_mark.png'),
       color: Colors.green,
       onRightClick: () => onChangeState(
-        state.copyWith(
-          type: CellStateTypes.default_,
-        ),
+        state.copyWith(type: CellStateTypes.default_),
       ),
     );
   }
