@@ -85,6 +85,17 @@ mixin _$MinesweeperController on MinesweeperControllerBase, Store {
   }
 
   @override
+  dynamic setBoardState(List<List<CellState>> state) {
+    final _$actionInfo = _$MinesweeperControllerBaseActionController
+        .startAction(name: 'MinesweeperControllerBase.setBoardState');
+    try {
+      return super.setBoardState(state);
+    } finally {
+      _$MinesweeperControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void initBoard(Difficulty difficulty) {
     final _$actionInfo = _$MinesweeperControllerBaseActionController
         .startAction(name: 'MinesweeperControllerBase.initBoard');

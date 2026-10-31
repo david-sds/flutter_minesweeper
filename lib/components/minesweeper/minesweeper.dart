@@ -28,7 +28,7 @@ enum Difficulty {
 
 class Minesweeper extends StatefulWidget {
   const Minesweeper({
-    required this.initialDifficulty,
+    this.initialDifficulty = Difficulty.expert,
     super.key,
   });
 

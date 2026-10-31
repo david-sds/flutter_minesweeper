@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_minesweeper/app/theme.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper.dart';
 import 'package:flutter_minesweeper/modules/system_configuration_module.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -15,21 +14,17 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Flutter Minesweeper'),
         leading: IconButton(
-          icon: Observer(
-            builder: (context) {
-              return Icon(
-                config.brightness == Brightness.light
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
-              );
-            }
-          ),
+          icon: Observer(builder: (context) {
+            return Icon(
+              config.brightness == Brightness.light
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            );
+          }),
           onPressed: () => config.toggleBrightness(),
         ),
       ),
-      body: const Minesweeper(
-        initialDifficulty: Difficulty.classic,
-      ),
+      body: Minesweeper(),
     );
   }
 }

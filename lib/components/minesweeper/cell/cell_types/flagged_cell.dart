@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_shell/cell_shell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
+import 'package:flutter_minesweeper/components/minesweeper/constants.dart';
 
 class FlaggedCell extends StatelessWidget {
   const FlaggedCell({
@@ -23,7 +24,7 @@ class FlaggedCell extends StatelessWidget {
       image: Image.asset('assets/images/flag.png'),
       color: Colors.yellow,
       onRightClick: () => onChangeState(
-        state.copyWith(type: CellStateTypes.question),
+        state.copyWith(type: kUseQuestionCell ? CellStateTypes.question : CellStateTypes.default_),
       ),
     );
   }

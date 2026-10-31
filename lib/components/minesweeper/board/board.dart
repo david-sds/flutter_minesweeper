@@ -3,6 +3,7 @@ import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/neighbor_cells/neighbor_cells.dart';
 import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
+import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
 
 class Board extends StatelessWidget {
   const Board({
@@ -16,7 +17,7 @@ class Board extends StatelessWidget {
     super.key,
   });
 
-  final List<List<CellState>> boardState;
+  final BoardState boardState;
   final GameState gameState;
   final double cellSize;
   final bool isHorizontalView;

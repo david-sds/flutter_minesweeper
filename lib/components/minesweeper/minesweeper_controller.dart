@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/cell_state/cell_state.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cell/neighbor_cells/neighbor_cells.dart';
+import 'package:flutter_minesweeper/components/minesweeper/constants.dart';
 import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper.dart';
 import 'package:mobx/mobx.dart';
@@ -10,6 +11,8 @@ part 'minesweeper_controller.g.dart';
 
 class MinesweeperController extends MinesweeperControllerBase
     with _$MinesweeperController {}
+
+typedef BoardState = List<List<CellState>>;
 
 abstract class MinesweeperControllerBase with Store {
   @observable
@@ -21,46 +24,71 @@ abstract class MinesweeperControllerBase with Store {
     _difficulty = difficulty;
   }
 
+  List<BoardState> _boardStates = [];
+
   @observable
-  List<List<CellState>> _boardState = [];
+  BoardState _boardState = [];
   @computed
-  List<List<CellState>> get boardState => _boardState;
+  BoardState get boardState => _boardState;
+  int get boardHash => Object.hashAll(
+        _boardState.map((row) => row.map((cell) => cell.isBomb).toString()),
+      );
+  int get boardStateHash => Object.hashAll(
+      _boardState.map((row) => row.map((cell) => cell.toString())));
+  @action
+  setBoardState(BoardState state) {
+    print(
+        "STATE ${state.length}x${state[0].length} $boardHash $boardStateHash");
+    _boardState = state;
+  }
 
   @action
   void initBoard(Difficulty difficulty) {
     try {
       _difficulty = difficulty;
-      final boardState = <List<CellState>>[];
-
-      for (var i = 0; i < _difficulty.x; i++) {
-        boardState.add([]);
-        for (var j = 0; j < _difficulty.y; j++) {
-          boardState[i].add(
-            CellState(
-              x: i,
-              y: j,
-              type: CellStateTypes.default_,
-              isBomb: false,
-            ),
-          );
-        }
+      setBoardState(_getBoardState(difficulty));
+      _boardStates = [];
+      _boardStates.add(_boardState);
+      final start = DateTime.now();
+      for (int i = 0; i < 100; i++) {
+        _boardStates.add(_getBoardState(difficulty));
       }
-
-      final bombPositions =
-          List<int>.generate(_difficulty.x * _difficulty.y, (i) => i)
-            ..shuffle();
-      for (var i = 0; i < _difficulty.bombNumber; i++) {
-        final bombPos = bombPositions.removeLast();
-        final y = (bombPos / _difficulty.x).floor();
-        final x = (bombPos % _difficulty.x);
-
-        boardState[x][y].isBomb = true;
-      }
-
-      _boardState = boardState;
+      final end = DateTime.now();
+      print(
+          '_initBoardState duration ${end.difference(start).inMilliseconds}ms');
     } catch (e) {
       debugPrint('Error while initing board => $e');
     }
+  }
+
+  BoardState _getBoardState(Difficulty difficulty) {
+    final boardState = <List<CellState>>[];
+
+    for (var i = 0; i < difficulty.x; i++) {
+      boardState.add([]);
+      for (var j = 0; j < difficulty.y; j++) {
+        boardState[i].add(
+          CellState(
+            x: i,
+            y: j,
+            type: CellStateTypes.default_,
+            isBomb: false,
+          ),
+        );
+      }
+    }
+
+    final bombPositions =
+        List<int>.generate(difficulty.x * difficulty.y, (i) => i)..shuffle();
+    for (var i = 0; i < difficulty.bombNumber; i++) {
+      final bombPos = bombPositions.removeLast();
+      final y = (bombPos / difficulty.x).floor();
+      final x = (bombPos % difficulty.x);
+
+      boardState[x][y].isBomb = true;
+    }
+
+    return boardState;
   }
 
   @computed
@@ -101,14 +129,45 @@ abstract class MinesweeperControllerBase with Store {
       for (final value in values) {
         boardState[value.x][value.y] = value;
       }
-      _boardState = boardState;
+      setBoardState(boardState);
     } catch (e) {
       debugPrint('Error while updating cells => $e');
     }
   }
 
+  (BoardState?, CellState?) _getCleanStartByCell(CellState value) {
+    for (int i = 0; i < _boardStates.length; i++) {
+      final board = _boardStates[i];
+      final cell = board[value.x][value.y];
+
+      if (cell.isBomb) {
+        continue;
+      }
+
+      final neighborCells =
+          _getNeighborCells(cellState: cell, boardState: board);
+
+      if (neighborCells.bombNumber != 0) {
+        continue;
+      }
+
+      return (board, cell.copyWith(type: CellStateTypes.cleared));
+    }
+    return (null, null);
+  }
+
   @action
-  void updateCellState(CellState value) => updateCellStates([value]);
+  void updateCellState(CellState value) {
+    if (gameState == GameState.ready) {
+      final (boardState, cellState) = _getCleanStartByCell(value);
+      if (boardState != null && cellState != null) {
+        _boardState = boardState;
+        clearAllSurroundingEmptyCells(value: cellState);
+      }
+    } else {
+      updateCellStates([value]);
+    }
+  }
 
   @action
   void clearSurroundingCells(CellState value) {
@@ -154,8 +213,8 @@ abstract class MinesweeperControllerBase with Store {
 
   void clearAllSurroundingEmptyCells({
     required CellState value,
-  }) {
-    final cellsToUpdate = getClearAllSurroundingEmptyCells(
+  }) async {
+    final cellsToUpdate = await getClearAllSurroundingEmptyCells(
       value: value,
       visitedCells: [],
       cellsToVisit: [],
@@ -167,15 +226,18 @@ abstract class MinesweeperControllerBase with Store {
     );
   }
 
-  List<CellState>? getClearAllSurroundingEmptyCells({
+  Future<List<CellState>?> getClearAllSurroundingEmptyCells({
     required CellState value,
     required List<CellState> visitedCells,
     required List<CellState> cellsToVisit,
-  }) {
+  }) async {
     cellsToVisit.remove(value);
     visitedCells.add(value);
 
-    updateCellState(value.copyWith(type: CellStateTypes.cleared));
+    if (kClearSlowly) {
+      updateCellState(value.copyWith(type: CellStateTypes.cleared));
+      await Future.delayed(Duration(milliseconds: 1));
+    }
     final neighborCells = getNeighborCells(value);
 
     if (neighborCells.bombNumber > 0) {
@@ -198,7 +260,7 @@ abstract class MinesweeperControllerBase with Store {
 
     while (cellsToVisit.isNotEmpty) {
       final cell = cellsToVisit.first;
-      getClearAllSurroundingEmptyCells(
+      await getClearAllSurroundingEmptyCells(
         value: cell,
         visitedCells: visitedCells,
         cellsToVisit: cellsToVisit,
@@ -208,47 +270,58 @@ abstract class MinesweeperControllerBase with Store {
     return visitedCells;
   }
 
-  NeighborCells getNeighborCells(CellState value) {
+  NeighborCells _getNeighborCells({
+    required CellState cellState,
+    required BoardState boardState,
+  }) {
     try {
-      final isTopmostRow = value.y == 0;
-      final isBottommostRow = value.y == difficulty.y - 1;
-      final isLeftmostColumn = value.x == 0;
-      final isRightmostColumn = value.x == difficulty.x - 1;
+      final isTopmostRow = cellState.y == 0;
+      final isBottommostRow = cellState.y == difficulty.y - 1;
+      final isLeftmostColumn = cellState.x == 0;
+      final isRightmostColumn = cellState.x == difficulty.x - 1;
 
       final neighborCells = NeighborCells();
 
       if (!isTopmostRow) {
-        neighborCells.top = boardState[value.x][value.y - 1];
+        neighborCells.top = boardState[cellState.x][cellState.y - 1];
       }
       if (!isTopmostRow && !isRightmostColumn) {
-        neighborCells.topRight = boardState[value.x + 1][value.y - 1];
+        neighborCells.topRight = boardState[cellState.x + 1][cellState.y - 1];
       }
       if (!isRightmostColumn) {
-        neighborCells.right = boardState[value.x + 1][value.y];
+        neighborCells.right = boardState[cellState.x + 1][cellState.y];
       }
       if (!isBottommostRow && !isRightmostColumn) {
-        neighborCells.bottomRight = boardState[value.x + 1][value.y + 1];
+        neighborCells.bottomRight =
+            boardState[cellState.x + 1][cellState.y + 1];
       }
       if (!isBottommostRow) {
-        neighborCells.bottom = boardState[value.x][value.y + 1];
+        neighborCells.bottom = boardState[cellState.x][cellState.y + 1];
       }
       if (!isBottommostRow && !isLeftmostColumn) {
-        neighborCells.bottomLeft = boardState[value.x - 1][value.y + 1];
+        neighborCells.bottomLeft = boardState[cellState.x - 1][cellState.y + 1];
       }
       if (!isLeftmostColumn) {
-        neighborCells.left = boardState[value.x - 1][value.y];
+        neighborCells.left = boardState[cellState.x - 1][cellState.y];
       }
       if (!isTopmostRow && !isLeftmostColumn) {
-        neighborCells.topLeft = boardState[value.x - 1][value.y - 1];
+        neighborCells.topLeft = boardState[cellState.x - 1][cellState.y - 1];
       }
 
       return neighborCells;
     } catch (e) {
       debugPrint(
-        'Error while getting NeighborCells (${value.x}, ${value.y})=> $e',
+        'Error while getting NeighborCells (${cellState.x}, ${cellState.y})=> $e',
       );
     }
     return NeighborCells();
+  }
+
+  NeighborCells getNeighborCells(CellState value) {
+    return _getNeighborCells(
+      cellState: value,
+      boardState: boardState,
+    );
   }
 
   @computed
