@@ -144,6 +144,10 @@ abstract class MinesweeperControllerBase with Store {
         continue;
       }
 
+      if (kFirstClickCheck == FirstClickType.clean) {
+        return (board, cell.copyWith(type: CellStateTypes.cleared));
+      }
+
       final neighborCells =
           _getNeighborCells(cellState: cell, boardState: board);
 
@@ -158,14 +162,27 @@ abstract class MinesweeperControllerBase with Store {
 
   @action
   void updateCellState(CellState value) {
-    if (gameState == GameState.ready) {
+    if (gameState != GameState.ready ||
+        kFirstClickCheck == FirstClickType.random) {
+      updateCellStates([value]);
+      return;
+    }
+
+
+    if (kFirstClickCheck == FirstClickType.clean) {
+      final (boardState, cellState) = _getCleanStartByCell(value);
+      if (boardState != null && cellState != null) {
+        _boardState = boardState;
+        updateCellStates([cellState]);
+      }
+    }
+
+    if (kFirstClickCheck == FirstClickType.expand) {
       final (boardState, cellState) = _getCleanStartByCell(value);
       if (boardState != null && cellState != null) {
         _boardState = boardState;
         clearAllSurroundingEmptyCells(value: cellState);
       }
-    } else {
-      updateCellStates([value]);
     }
   }
 
