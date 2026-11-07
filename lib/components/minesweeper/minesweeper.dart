@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_minesweeper/components/minesweeper/board/board.dart';
-import 'package:flutter_minesweeper/components/minesweeper/cronometer/cronometer.dart';
 import 'package:flutter_minesweeper/components/minesweeper/cronometer/cronometer_controller.dart';
 import 'package:flutter_minesweeper/components/minesweeper/face/face.dart';
 import 'package:flutter_minesweeper/components/minesweeper/minesweeper_controller.dart';
@@ -143,12 +142,12 @@ class _MinesweeperState extends State<Minesweeper> {
                         const SizedBox(
                           width: 12,
                         ),
-                        Chip(
-                          avatar: const Icon(Icons.schedule),
-                          label: Cronometer(
-                            controller: _cronometerController,
-                          ),
-                        ),
+                        // Chip(
+                        //   avatar: const Icon(Icons.schedule),
+                        //   label: Cronometer(
+                        //     controller: _cronometerController,
+                        //   ),
+                        // ),
                       ],
                     ),
                     Observer(builder: (context) {

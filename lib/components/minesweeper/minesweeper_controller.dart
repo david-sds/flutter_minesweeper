@@ -37,8 +37,9 @@ abstract class MinesweeperControllerBase with Store {
       _boardState.map((row) => row.map((cell) => cell.toString())));
   @action
   setBoardState(BoardState state) {
-    print(
-        "STATE ${state.length}x${state[0].length} $boardHash $boardStateHash");
+    debugPrint(
+      "STATE ${state.length}x${state[0].length} $boardHash $boardStateHash",
+    );
     _boardState = state;
   }
 
@@ -54,8 +55,9 @@ abstract class MinesweeperControllerBase with Store {
         _boardStates.add(_getBoardState(difficulty));
       }
       final end = DateTime.now();
-      print(
-          '_initBoardState duration ${end.difference(start).inMilliseconds}ms');
+      debugPrint(
+        '_initBoardState duration ${end.difference(start).inMilliseconds}ms',
+      );
     } catch (e) {
       debugPrint('Error while initing board => $e');
     }
@@ -167,7 +169,6 @@ abstract class MinesweeperControllerBase with Store {
       updateCellStates([value]);
       return;
     }
-
 
     if (kFirstClickCheck == FirstClickType.clean) {
       final (boardState, cellState) = _getCleanStartByCell(value);
